@@ -1,0 +1,124 @@
+[
+  {
+    "id": "Q01",
+    "type": "simple_search",
+    "question": "What did Nexus Consulting propose to client Kova d.o.o. regarding ERP integration?",
+    "expected_answer": "Nexus proposed implementing SAP S/4HANA 2023 to replace Kova's existing Microsoft Dynamics NAV 2016. The proposal included modules FI/CO, MM, SD, and AA, integration with Magento 2 via a custom Python middleware, and integration with Manhattan Associates WMS. The project value was 217,300 EUR and the original proposed go-live was October 1, 2024.",
+    "relevant_docs": ["proposals/13_kova_erp_proposal.md", "meeting_minutes/01_kova_erp_kickoff.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q02",
+    "type": "simple_search",
+    "question": "Who on the Nexus team is a specialist in AWS and what are their certifications?",
+    "expected_answer": "Luka Zupan is the AWS specialist at Nexus Consulting. His certifications include: AWS Solutions Architect Associate (2022), AWS DevOps Professional (2023), and Azure Administrator Associate AZ-104 (2024). He has the highest AWS competency score (4/4) across all team members.",
+    "relevant_docs": ["technical_reports/25_team_skills_matrix_2024.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q03",
+    "type": "simple_search",
+    "question": "What was the total contract value of the Helios BI project and when was it completed?",
+    "expected_answer": "The Helios BI project (HELIOS-2022-BI) had a contract value of 68,000 EUR (excluding VAT). It was completed and the acceptance report was signed on September 10, 2022. The close-out meeting was held on September 14, 2022.",
+    "relevant_docs": ["meeting_minutes/09_helios_closeout.md", "proposals/17_helios_bi_report_2022.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q04",
+    "type": "simple_search",
+    "question": "What programming language and framework is used for the Meridian web platform backend?",
+    "expected_answer": "The Meridian web platform uses Python 3.12 as the programming language, Django 5.0 as the web framework, and Django REST Framework 3.15 for the REST API. The frontend uses React 18 with TypeScript.",
+    "relevant_docs": ["technical_reports/30_meridian_tech_spec.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q05",
+    "type": "simple_search",
+    "question": "What was the total proposed value of the Atlas cloud migration project?",
+    "expected_answer": "The Atlas cloud migration project (ATLAS-2023-CLOUD) had a total Nexus Consulting service value of 142,000 EUR (excluding VAT). The estimated monthly AWS costs after migration were approximately 1,800 EUR, compared to the existing server room cost of ~2,400 EUR/month.",
+    "relevant_docs": ["proposals/14_atlas_cloud_proposal.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q06",
+    "type": "simple_search",
+    "question": "Who was the project manager for the DataSync integration project?",
+    "expected_answer": "Sara Petric was the project manager (and data architect) for the DataSync integration project (DSYNC-2024-INT).",
+    "relevant_docs": ["meeting_minutes/07_datasync_risk_review.md", "proposals/19_datasync_proposal.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q07",
+    "type": "multi_hop",
+    "question": "Which projects involved cloud migration and what were the key lessons learned across those projects?",
+    "expected_answer": "Two projects involved cloud migration: (1) Atlas d.o.o. (AWS, eu-central-1) and (2) Argon d.o.o. (Azure, West Europe). Key lessons learned from both, documented in the cloud migration lessons report: (1) Lift & shift is often the right decision for time-constrained projects; (2) Terraform is mandatory from day one; (3) A proper workload assessment before migration saves time (Azure Migrate was accurate to ±10% for Argon); (4) Multi-AZ for all production databases is non-negotiable; (5) Exchange to M365 migration is more complex than expected — should be treated as a separate subproject; (6) Cut-over should be on Saturday morning, not Friday evening; (7) For Windows workloads, Azure is preferable; for Linux workloads, AWS is more cost-effective.",
+    "relevant_docs": ["proposals/14_atlas_cloud_proposal.md", "proposals/18_argon_cloud_final_report.md", "technical_reports/27_cloud_migration_lessons_learned.md", "meeting_minutes/02_atlas_cloud_weekly_march.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "Q08",
+    "type": "multi_hop",
+    "question": "Which team members have experience with both ERP systems and cloud platforms?",
+    "expected_answer": "Based on the 2024 skills matrix: Tomaž Kržič has experience with both — he scores 1 on SAP S/4HANA, 1 on SAP B1, 1 on Dynamics NAV/BC (ERP), and 3 on AWS and 2 on Azure (cloud). Janez Novak also has both — scoring 1 on SAP S/4HANA, 2 on SAP B1, 2 on Dynamics NAV/BC (ERP), and 2 on AWS (cloud). Ana Kovač has minimal experience in both areas (score 1). Maja Horvat has deep ERP expertise (4 on SAP S/4HANA) but no cloud experience.",
+    "relevant_docs": ["technical_reports/25_team_skills_matrix_2024.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "Q09",
+    "type": "multi_hop",
+    "question": "Which projects exceeded their original timeline and what were the reasons?",
+    "expected_answer": "Multiple projects experienced delays: (1) Atlas cloud migration — original go-live was Q2 2024 (June), revised to December 2024. Reasons: complexity of .NET Framework 4.5 legacy services and WAF approval delays. (2) Kova ERP — original go-live was October 1, 2024, revised to Q1 2025 (January/February). Reasons: poor data quality in NAV (data cleaning extended from 3-4 weeks to 6 weeks) and architecture change (custom middleware instead of SAP Integration Suite). (3) Nova Logistics CRM — original go-live was June 2023, actual was September 11, 2023. Reason: poor quality of Excel data files from sales team. (4) Meridian — 1-2 weeks behind plan at mid-project review.",
+    "relevant_docs": ["meeting_minutes/02_atlas_cloud_weekly_march.md", "meeting_minutes/10_kova_erp_architecture_review.md", "proposals/20_nova_logistics_crm_report.md", "proposals/22_meridian_midproject_report.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "Q10",
+    "type": "multi_hop",
+    "question": "What clients did Nexus Consulting work with in 2023 and which projects were successfully completed?",
+    "expected_answer": "In 2023, Nexus worked with: (1) Merkur IT — legacy modernization project MERKUR-2023-MOD, successfully completed October 14, 2023. Acceptance report signed October 31, 2023. (2) Nova Logistics d.o.o. — Salesforce CRM implementation NOVA-2023-CRM, started March 2023, go-live September 11, 2023 (completed). (3) Helios d.o.o. — BI project was completed in 2022, but a 3-month support retainer continued into early 2023.",
+    "relevant_docs": ["proposals/15_merkur_final_report.md", "proposals/20_nova_logistics_crm_report.md", "meeting_minutes/04_merkur_retrospective.md", "meeting_minutes/12_nova_logistics_crm_kickoff.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "Q11",
+    "type": "unanswerable",
+    "question": "Who is the CEO of Kova d.o.o.?",
+    "expected_answer": "The documents do not contain information about the CEO of Kova d.o.o. The only Kova representative mentioned is Gregor Mlakar (IT Director) and Petra Sajovic (Business Process Manager).",
+    "relevant_docs": [],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q12",
+    "type": "unanswerable",
+    "question": "What is the annual revenue of Nexus Consulting d.o.o.?",
+    "expected_answer": "The documents do not contain any information about Nexus Consulting's annual revenue or financial performance.",
+    "relevant_docs": [],
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q13",
+    "type": "unanswerable",
+    "question": "What specific security vulnerabilities were found during the Atlas cloud migration penetration test?",
+    "expected_answer": "The documents do not mention any penetration test being conducted for the Atlas project. The WAF configuration and security setup are described, but no penetration test results are present in the corpus.",
+    "relevant_docs": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "Q14",
+    "type": "trick_contradictory",
+    "question": "When did the Atlas cloud migration project go live?",
+    "expected_answer": "There are conflicting dates across documents: The original proposal (August 2023) planned go-live for Q2 2024 (June 2024). The weekly meeting (March 2024) revised this to Q3 2024 (September 2024). The steering committee (May 2024) revised it again to December 2024. A memo from Luka Zupan (November 2024) confirmed the fixed date of December 15, 2024. The system should flag this contradiction and report the most recent confirmed date (December 15, 2024) while noting the history of revisions.",
+    "relevant_docs": ["proposals/14_atlas_cloud_proposal.md", "meeting_minutes/02_atlas_cloud_weekly_march.md", "meeting_minutes/03_atlas_steering_committee.md", "technical_reports/33_atlas_go_live_memo.txt"],
+    "difficulty": "hard",
+    "contradictions": ["Q2 2024 (original proposal)", "Q3 2024 (March meeting)", "December 2024 (steering committee)", "December 15, 2024 (Luka memo)"]
+  },
+  {
+    "id": "Q15",
+    "type": "trick_contradictory",
+    "question": "What technologies does Janez Novak know and at what skill level?",
+    "expected_answer": "There is a discrepancy between the 2023 and 2024 skills matrices. Per the 2024 matrix (current): Python 3/4, Java 3/4, JavaScript/TypeScript 3/4, PHP 3/4, .NET/C# 3/4, SQL 3/4, ABAP 2/4, Docker 3/4, Kubernetes 2/4, Terraform 1/4, SAP B1 2/4, Dynamics NAV/BC 2/4, Salesforce 2/4, PostgreSQL 3/4, MySQL 3/4, Redis 3/4, AWS (general) 2/4. The 2023 matrix shows lower scores in several areas (e.g., ABAP was 1, Kubernetes was 1, AWS was 1). The 2024 document is explicitly marked as the current version replacing 2023.",
+    "relevant_docs": ["technical_reports/25_team_skills_matrix_2024.md", "technical_reports/26_team_skills_matrix_2023.md"],
+    "difficulty": "hard",
+    "contradictions": ["2023 matrix vs 2024 matrix show different skill levels for Janez Novak"]
+  }
+]

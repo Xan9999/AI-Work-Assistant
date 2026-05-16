@@ -1,0 +1,30 @@
+INTERNO OBVESTILO
+=================
+Od: Luka Zupan
+Komu: Ana Kovač, Tomaž Kržič
+Datum: 2024-11-28
+Zadeva: Atlas – potrditev datuma go-live
+
+Ana, Tomaž,
+
+po včerajšnjem sestanku z Mitja Ferlan (Atlas) potrjujem:
+
+Go-live datum za projekt ATLAS-2023-CLOUD je bil uradno dogovorjen
+za 15. december 2024.
+
+Vse komponente so testirane in ready. Cut-over plan je bil pregledan
+z Mitja in Urška. Produkcijski DNS switch bo izveden v nedeljo
+15.12.2024 med 02:00 in 06:00.
+
+Ekipa:
+- Luka Zupan: on-call 24h pred in 48h po cut-over
+- Janez Novak: on-call za aplikacijske težave
+- Urška Brence (Atlas): on-call za VPN in firewall
+
+Rollback plan: DNS switch nazaj na on-prem v < 15 min, če je potrebno.
+
+Napomnik: originalna ponudba je predvidevala go-live junij 2024.
+Steering committee maj 2024 je potrdil december 2024.
+Ta memo potrjuje 15. december 2024 kot fiksni datum.
+
+Luka

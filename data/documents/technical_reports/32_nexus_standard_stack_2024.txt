@@ -1,0 +1,67 @@
+NEXUS CONSULTING - STANDARDNI TEHNOLOŠKI SKLAD 2024
+====================================================
+Interno gradivo | Datum: 2024-02-01 | Avtor: Tomaž Kržič
+
+NAMEN
+-----
+Ta dokument definira privzete tehnološke izbire pri novih projektih.
+Odstopanja zahtevajo pisno utemeljitev v arhitekturnem dokumentu.
+
+BACKEND
+-------
+Privzeti jezik: Python 3.12+
+Web framework: Django 5.x (za polne aplikacije) / FastAPI (za API-only storitve)
+ORM: Django ORM (za Django projekte), SQLAlchemy 2.x (za FastAPI)
+Async tasking: Celery + Redis
+Testiranje: pytest + factory_boy
+Linting: ruff + mypy (strict)
+
+FRONTEND
+--------
+Framework: React 18+ z TypeScript (strogo)
+Build: Vite
+CSS: Tailwind CSS
+State: React Query (server state) + Zustand (client state) po potrebi
+Testiranje: Vitest + React Testing Library
+
+PODATKOVNA BAZA
+---------------
+Privzeto: PostgreSQL 16+
+Cache: Redis 7+
+Brez privzetosti za NoSQL - izbira glede na primer uporabe.
+
+INFRASTRUKTURA
+--------------
+Privzeta platforma: AWS (eu-central-1)
+IaC: Terraform (obvezno)
+Containerizacija: Docker
+Orchestracija: ECS Fargate (za nove projekte) / EKS samo če naročnik zahteva
+CI/CD: GitHub Actions
+Monitoring: Prometheus + Grafana ALI AWS CloudWatch (odvisno od obsega)
+Log agregacija: AWS CloudWatch Logs (privzeto)
+
+VARNOST
+-------
+Avtentikacija: JWT (SimpleJWT za Django) ALI OAuth 2.0 (za B2B)
+Secrets management: AWS Secrets Manager (ne environment spremenljivke)
+Dependency scanning: Dependabot (GitHub) ali pip-audit
+SAST: Bandit za Python
+
+VERZIONIRANJE IN WORKFLOW
+-------------------------
+Git hosting: GitHub
+Branching: trunk-based development z feature flags ZA večje teme
+PR: Obvezni code review (min. 1 approver)
+Commit style: Conventional Commits
+
+IZJEME IN NASLOVE 2023
+-----------------------
+- Projekt Merkur: PHP 8.2 (legacy projekt - ni Python)
+- Projekt Atlas: .NET Framework 4.5 Windows containers (legacy, ni alternativa)
+- Projekt Helios: Tableau + SSIS (BI projekt - ni standardni stack)
+- SAP projekti: ABAP + SAP ekosistem (Maja Horvat odgovorna)
+
+PREGLED
+-------
+Naslednji pregled: januar 2025.
+Odgovorna oseba: Tomaž Kržič
