@@ -25,6 +25,7 @@ COLLECTION_NAME = "nexus_docs"
 RRF_K = 60
 RETRIEVAL_TOP_K = 20
 RERANK_TOP_K = 5
+MATRIX_KEYWORDS = {"ocena", "kompetenca", "matrika", "certifikat", "skill", "rating", "level", "izkušnje", "experience", "veščine"}
 
 
 class E5EmbeddingFunction(EmbeddingFunction):
@@ -119,7 +120,7 @@ class HybridRetriever:
             return []
 
         pairs = [(query, c["text"]) for c in candidates]
-        scores = self.reranker.predict(pairs)
+        scores = self.reranker.predict(pairs, batch_size=4)
 
         ranked = sorted(zip(candidates, scores), key=lambda x: x[1], reverse=True)
 
@@ -175,11 +176,15 @@ class HybridRetriever:
         """
         Full pipeline:
           BM25(query) + vector(hypothetical or query) → RRF → rerank(query) → expand
+
+        For matrix/competence queries, k is automatically raised to 8 to improve
+        recall when values are spread across multiple table rows.
         """
+        effective_k = 8 if any(w in query.lower() for w in MATRIX_KEYWORDS) else k
         bm25_results = self.bm25_search(query)
         vector_results = self.vector_search(hypothetical if hypothetical else query)
         fused = self.rrf_fusion(bm25_results, vector_results)
-        ranked = self.rerank(query, fused, k=k)
+        ranked = self.rerank(query, fused, k=effective_k)
         return [self._expand_chunk(c) for c in ranked]
 
 

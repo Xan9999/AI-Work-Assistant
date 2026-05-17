@@ -1,0 +1,272 @@
+[
+  {
+    "id": "SL01",
+    "type": "simple_search",
+    "question": "Katere certifikate ima Luka Zupan in kdaj jih je pridobil?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Luka Zupan ima naslednje certifikate:\n\n- **AWS Solutions Architect Associate** - pridobljen leta **2022**\n- **AWS DevOps Professional** - pridobljen leta **2023**\n- **Azure Administrator Associate (AZ-104)** - pridobljen leta **2024** \n\n(According to [Source 3: Matrika kompetenc ekipe Nexus Consulting — 3. Certifikati], [Source 2: Interni sestanek — Planiranje virov Q1 2024 — Usposabljanje]).\n\n⚠️ Opozorilo — nasprotujoče si informacije: The generated answer states that Luka Zupan obtained the 'Azure Administrator Associate (AZ-104)' cert in 2024, whereas the sources confirm he obtained it in 2024.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 18.69,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually accurate and confident, but while it provides source citations, they could be clearer regarding specific documents and sections.",
+      "total": 11,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL02",
+    "type": "simple_search",
+    "question": "Kdaj je bil zaključen projekt Argon Azure Cloud Migration in ali je bil zaključen v roku?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Projekt Argon Azure Cloud Migration je bil zaključen **10. junija 2024**. Da, projekt je bil zaključen v roku, saj je bil dosežen trdi rok **31. maja 2024** (datum poteka pogodbe za datacenter) in je bil go-live datum izveden dan prej, **30. maja 2024** (1 dan prej).\n\n(According to [Source 6: Zaključno poročilo — Argon Azure Cloud Migration — 1. Povzetek]).",
+    "sources_retrieved": 13,
+    "elapsed_seconds": 28.89,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer contains major factual inaccuracies regarding the completion date of the project, but it acknowledges that the project was completed on time and provides a source of information.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL03",
+    "type": "simple_search",
+    "question": "Kdo je bil vodja projekta Kova ERP in kateri razvijalec je delal na projektu?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Vodja projekta Kova ERP je bila **Ana Kovač**, medtem ko je na projektu delal razvijalec **Janez Novak**.\n\n(According to [Source 1: Zapisnik sestanka — Kick-off: ERP integracija, Kova d.o.o. — Prisotni]).",
+    "sources_retrieved": 9,
+    "elapsed_seconds": 28.36,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The assistant's answer is factually correct and well-cited, confidently providing the requested information without contradiction.",
+      "total": 12,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL04",
+    "type": "simple_search",
+    "question": "Kaj je bil korenski vzrok incidenta pri projektu DataSync?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Korenski vzrok incidenta pri projektu DataSync je bil, da je Salesforce brez predhodnega opozorila spremenil strukturo API odgovora za objekt `Contact`. Polje `Phone` je bilo preimenovano v `MobilePhone`, kar je povzročilo napako pri deserializaciji v Python modelu.\n\n(According to [Source 11: Izredni sestanek — DataSync produkcijski incident — Opis incidenta]).",
+    "sources_retrieved": 15,
+    "elapsed_seconds": 45.7,
+    "scores": {
+      "factual_correctness": 0,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually incorrect regarding the root cause of the incident, but it cites its source accurately and handles uncertainty appropriately.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL05",
+    "type": "simple_search",
+    "question": "Kateri oblačni ponudnik je bil izbran za projekt Atlas in v kateri regiji je bila infrastruktura postavljena?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Za projekt Atlas d.o.o. je bil izbran oblačni ponudnik **AWS (Amazon Web Services)**, infrastruktura pa je bila postavljena v regiji **eu-central-1 (Frankfurt)**.\n\n(According to [Source 1: Projektna ponudba — Migracija v oblak (AWS) — 1. Povzetek]).",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 16.44,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The AI assistant's answer is fully accurate, clearly cites the source, handles uncertainty appropriately, and the question has no contradictions.",
+      "total": 12,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL06",
+    "type": "simple_search",
+    "question": "Katere SAP certifikate ima Maja Horvat?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Maja Horvat ima naslednje SAP certifikate:\n\n- **SAP Certified Application Associate (FI)** — 2018\n- **SAP Certified Application Associate (MM)** — 2019\n\n(According to [Source 6: Matrika kompetenc ekipe Nexus Consulting — 4. Primanjkljaji in plan usposabljanja 2024]).",
+    "sources_retrieved": 8,
+    "elapsed_seconds": 26.51,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is fully accurate, cites a specific source clearly, and handles the question appropriately without expressing uncertainty or encountering contradictions.",
+      "total": 12,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL07",
+    "type": "multi_hop",
+    "question": "Kateri člani ekipe imajo oceno 3 ali več pri orodju Docker in kateri projekti so vključevali kontejnerizacijo?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Člani ekipe, ki imajo oceno 3 ali več pri orodju Docker, so:\n\n- **Ana Kovač** (ocena 3)\n- **Luka Zupan** (ocena 4)\n- **Janez Novak** (ocena 3)\n\nProjekti, ki so vključivali kontejnerizacijo, so:\n\n- **Projekt Merkur IT Modernizacija** — v okviru CI/CD so bile uporabljene Docker storitve.\n- **Projekt Atlas Cloud** — vključuje kontejnerizacijo 3 od 7 servisov ter uporabo Terraform za infrastrukturo z Dockerjem.\n\n(According to [Source 1: Matrika kompetenc ekipe Nexus Consulting — 2. Kompetencna matrika], [Source 4: Zapisnik retrospektive — Projekt Merkur IT Modernizacija], [Source 10: Zapisnik tedenskega sestanka — Atlas cloud migracija — Status posameznih komponent]).",
+    "sources_retrieved": 19,
+    "elapsed_seconds": 38.25,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer contains inaccuracies regarding the members' ratings and projects involving containerization, but it handles the uncertainty of the question appropriately and cites sources, albeit not very specifically.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL08",
+    "type": "multi_hop",
+    "question": "Primerjaj oblačni arhitekturi projektov Atlas (AWS) in Argon (Azure) — kateri oblačni ponudnik je bil izbran pri vsakem in zakaj?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Pri vsakem projektu je bil izbran naslednji oblačni ponudnik:\n\n- **Projekt Atlas (AWS)**:\n  - Izbran ponudnik: **Amazon Web Services (AWS)**\n  - Razlog izbire:\n    - Ekipa Nexus ima certificirane strokovnjake za AWS.\n    - Ugodnejši stroški za predvideni workload v primerjavi z drugimi ponudniki.\n    - Odlična podpora za Windows workloade.\n\n(According to [Source 1: Tehnično poročilo — Naučene lekcije: Cloud migracije — 2. Skupne ugotovitve (AWS in Azure)]).\n\n- **Projekt Argon (Azure)**:\n  - Izbran ponudnik: **Microsoft Azure**\n  - Razlog izbire:\n    - Trdi rok, ki je bil neizogiben zaradi poteka pogodbe za podatkovni center.\n    - Vse obstoječe aplikacije in sistemi so bili bolj primerni za migracijo na Azure, predvsem zaradi prednosti, ki jih nudi Microsoft za uporabnike svojega ekosistema.\n\n(According to [Source 1: Tehnično poročilo — Naučene lekcije: Cloud migracije — 2. Skupne ugotovitve (AWS in Azure)], [Source 11: Zapisnik — Kick-off: Argon Cloud Migration (Azure) — Arhitektura]).",
+    "sources_retrieved": 12,
+    "elapsed_seconds": 33.34,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer contains significant inaccuracies regarding the reasons for cloud provider selection, but it cites sources and handles uncertainty well.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL09",
+    "type": "multi_hop",
+    "question": "Kateri projekti Nexus Consultinga so imeli incident ali resno tehnično težavo med izvedbo in kako so bile rešene?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Projekti Nexus Consulting, ki so imeli incident ali resno tehnično težavo med izvedbo, vključujejo:\n\n1. **Projekt Atlas (AWS)**:\n   - **Težava**: Zamuda pri migraciji dveh legacy .NET aplikacij zaradi tehnične kompleksnosti in potrebnih WAF odobritev.\n   - **Rešitev**: Oba aplikacija bosta migrirani v Windows containers na EC2 brez refaktoringa na .NET 8, kar je pospešilo zaključek za približno 6 tednov. Novi predvideni go-live je bil postavljen na december 2024.\n\n(According to [Source 3: Zapisnik — Steering Committee: Atlas Cloud Migration — Status projekta]).\n\n2. **Projekt Kova ERP Integracija**:\n   - **Težava**: Natančne informacije o incidentih ali težavah med izvajanjem niso navedene v dokumentih, zato ni mogoče podati specifičnih podrobnosti.\n   - **Rešitev**: Na sestanku se je obravnavala tveganja, kar nakazuje, da se projektni tim aktivno ukvarja s potencialnimi težavami.\n\n(According to [Source 4: Zapisnik sestanka — Kick-off: ERP integracija, Kova d.o.o. — Prisotni]).\n\nNa voljo je le del informacij o tehničnih težavah za projekt Kova ERP Integracija, zato niso navedene specifične rešitve.\n\n⚠️ Opozorilo — nasprotujoče si informacije: The generated answer states that the new go-live date for Project Atlas is December 2024, while the documents indicate that the new expected go-live date is October 1, 2024, for Project Kova ERP Integration.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 18.48,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 2,
+      "contradiction_handling": 3,
+      "reasoning": "The answer contains notable inaccuracies regarding the details of the incidents and their resolutions while also citing sources, but it displays some handling of uncertainty and contradictions.",
+      "total": 8,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL10",
+    "type": "multi_hop",
+    "question": "Kateri član ekipe ima hkrati izkušnje s SAP sistemi (ocena ≥ 2) in z orodjem Kubernetes (ocena ≥ 1)?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Član ekipe, ki ima hkrati izkušnje s SAP sistemi (ocena ≥ 2) in z orodjem Kubernetes (ocena ≥ 1), je:\n\n- **Maja Horvat**\n  - Ocena za SAP (ABAP): 2\n  - Ocena za Kubernetes: 1\n\n(According to [Source 1: Matrika kompetenc ekipe Nexus Consulting — 4. Primanjkljaji in plan usposabljanja 2024], [Source 5: Matrika kompetenc ekipe Nexus Consulting — Kompetencna matrika (2023)]).",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 19.69,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer identifies a team member with the required qualifications, but the member named does not match the expected answer, resulting in a significant factual error.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL11",
+    "type": "unanswerable",
+    "question": "Koliko zaposlenih ima podjetje Nexus Consulting skupaj?",
+    "query_type_detected": "simple",
+    "actual_answer": "Na žalost, v razpoložljivih dokumentih ni navedena informacija o skupnem številu zaposlenih v podjetju Nexus Consulting. Zato na to vprašanje ne morem odgovoriti.\n\n⚠️ Opozorilo — nasprotujoče si informacije: Document excerpts indicate that Nexus Consulting works with clients having between 50 to 500 employees, which implies they have access to employee data, possibly conflicting with the claim of not having information about the total number of employees.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 11.0,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer inaccurately states there is no information about employee numbers while the documents suggest otherwise, and it fails to cite any sources.",
+      "total": 10,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL12",
+    "type": "unanswerable",
+    "question": "Kakšni so načrti Nexus Consultinga za pridobivanje novih strank v letu 2025?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Na žalost, v razpoložljivih dokumentih ni navedena informacija o načrtih Nexus Consultinga za pridobivanje novih strank v letu 2025. Zato na to vprašanje ne morem odgovoriti.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 14.76,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually correct and appropriately refuses to provide information that is not present in the documents, but it fails to cite any sources.",
+      "total": 12,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL13",
+    "type": "unanswerable",
+    "question": "Kateri je uradni naslov sedeža podjetja Nexus Consulting d.o.o.?",
+    "query_type_detected": "simple",
+    "actual_answer": "Na žalost, v razpoložljivih dokumentih ni navedena informacija o uradnem naslovu sedeža podjetja Nexus Consulting d.o.o. Zato na to vprašanje ne morem odgovoriti.\n\n⚠️ Opozorilo — nasprotujoče si informacije: The generated answer claims there is no information about the official address of Nexus Consulting d.o.o., but the document excerpts contain project proposals indicating Nexus Consulting's involvement and existence.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 7.47,
+    "scores": {
+      "factual_correctness": 0,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer incorrectly claims there is no information about Nexus Consulting d.o.o.'s address, despite the existence of related documents indicating the company's involvement.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL14",
+    "type": "trick_contradictory",
+    "question": "Katere so DevOps veščine Janeza Novaka in na kateri ravni?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "DevOps veščine Janeza Novaka in njihove ravni so naslednje:\n\n- **Docker:** 2\n- **Kubernetes:** 2\n- **Terraform:** 1\n\nTo pomeni, da Janez Novak ima srednje znanje (ravni 2) v Dockerju in Kubernetesu ter osnovno znanje (ravni 1) v Terraformu, kar kaže na njegovo sposobnost pri upravljanju s temi tehnologijami v DevOps okolju. Informacije so povzete iz dokumenta \"[Source 2: Matrika kompetenc ekipe Nexus Consulting — 2. Kompetencna matrika]\".\n\n⚠️ Opozorilo — nasprotujoče si informacije: Janez Novak's Kubernetes skill level is stated as 2 in the generated answer, whereas the document excerpts indicate it was 1 in 2023 and 2 in 2024.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 17.52,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 0,
+      "reasoning": "The answer contains inaccuracies regarding Janez Novak's Kubernetes skill level, and it does not identify the contradiction between the stated levels and the expected answer.",
+      "total": 6,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "SL15",
+    "type": "trick_contradictory",
+    "question": "Kdaj je bil prvotno načrtovan go-live projekta Atlas in kdaj je dejansko šel v produkcijo?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Prvotno načrtovan go-live projekta Atlas je bil v juniju 2024. Vendar je bil zaradi zamud, povezanih z containerizacijo in odobritvijo WAF, revidiran na 15. december 2024, kar je dejansko datum, ko je projekt prešel v produkcijo. \n\n- **Prvotni go-live datum:** Junij 2024\n- **Dejanski go-live datum:** 15. december 2024\n\nTe informacije so povzete iz dokumentov \"[Source 1: Zapisnik tedenskega sestanka — Atlas cloud migracija — Časovni plan — update]\" in \"[Source 2: 33 Atlas Go Live Memo — Content]\".",
+    "sources_retrieved": 6,
+    "elapsed_seconds": 22.77,
+    "scores": {
+      "factual_correctness": 2,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 1,
+      "reasoning": "The answer is mostly correct, but it does not fully acknowledge the multiple revisions and conflicting information from different documents regarding the go-live date.",
+      "total": 8,
+      "max_total": 12
+    }
+  }
+]

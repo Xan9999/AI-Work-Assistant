@@ -29,6 +29,24 @@ COLLECTION_NAME = "nexus_docs"
 MAX_CHUNK_CHARS = 1800
 
 
+def _atomic_blocks(paragraphs: list[str]) -> list[str]:
+    """Group each ### sub-heading with the paragraph immediately following it.
+
+    Prevents tables from being split away from their column headers at chunk boundaries.
+    """
+    blocks = []
+    i = 0
+    while i < len(paragraphs):
+        para = paragraphs[i]
+        if re.match(r'^###\s+', para) and i + 1 < len(paragraphs):
+            blocks.append(para + "\n\n" + paragraphs[i + 1])
+            i += 2
+        else:
+            blocks.append(para)
+            i += 1
+    return blocks
+
+
 def chunk_markdown(text: str, doc_path: str, doc_type: str) -> list[dict]:
     """Split markdown into section-level chunks, further splitting long sections."""
     title_match = re.search(r'^#\s+(.+)$', text, re.MULTILINE)
@@ -48,7 +66,7 @@ def chunk_markdown(text: str, doc_path: str, doc_type: str) -> list[dict]:
         if len(section) <= MAX_CHUNK_CHARS:
             chunks.append(_make_chunk(section, doc_title, section_heading, doc_path, doc_type, len(chunks)))
         else:
-            paragraphs = re.split(r'\n{2,}', section)
+            paragraphs = _atomic_blocks(re.split(r'\n{2,}', section))
             current = ""
             for para in paragraphs:
                 if len(current) + len(para) + 2 > MAX_CHUNK_CHARS and current:

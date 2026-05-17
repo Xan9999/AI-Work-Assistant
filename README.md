@@ -103,7 +103,7 @@ AI-Work-Assistant/
 │   ├── questions_sl.json  # 15 kontrolnih vprašanj (slovenščina)
 │   └── evaluate.py        # LLM-as-judge evalvacija
 ├── data/
-│   ├── docs/              # 33 sintetičnih dokumentov (Markdown)
+│   ├── documents/         # 33 sintetičnih dokumentov (Markdown)
 │   ├── models/            # Lokalno shranjeni modeli (ni v git)
 │   ├── bm25_index.pkl     # BM25 indeks (ni v git)
 │   └── chroma_db/         # ChromaDB vektorski indeks (ni v git)

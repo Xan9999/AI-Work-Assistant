@@ -14,6 +14,7 @@ load_dotenv()
 MODEL = os.getenv("CHATGPT_MODEL", "gpt-4o-mini")
 RERANK_SCORE_THRESHOLD = -6.0
 MAX_HISTORY_TURNS = 3
+CONTRADICTION_CHECK_K = 10
 
 
 SYSTEM_PROMPT = """You are an internal AI assistant for Nexus Consulting d.o.o., an IT consulting firm.
@@ -50,6 +51,20 @@ HYDE_PROMPT = """Write a short, specific answer to the following question as if 
 Question: {question}
 
 Answer:"""
+
+
+CONTRADICTION_PROMPT = """You are checking whether the provided document excerpts contain conflicting factual claims about the same topic.
+
+Document excerpts:
+{context}
+
+Do any excerpts state an explicitly DIFFERENT value (not just additional detail) for the exact same fact?
+Examples of real contradictions: "go-live was June 2024" vs "go-live was December 2024", "skill score is 3" vs "skill score is 1".
+Do NOT flag: missing info, different roles (e.g. CEO vs IT director), partial vs full dates that are consistent, same info stated differently.
+
+Reply with JSON only:
+- {{"contradiction": false}} if no real contradiction found
+- {{"contradiction": true, "note": "fact X: document A says Y, document B says Z"}} if real contradiction found"""
 
 
 class RAGAssistant:
@@ -110,6 +125,43 @@ class RAGAssistant:
         best_score = max(c.get("rerank_score", 0.0) for c in chunks)
         return best_score > RERANK_SCORE_THRESHOLD
 
+    def _check_contradiction(
+        self,
+        question: str,
+        primary_context: str,
+        sub_questions: list[str] | None = None,
+    ) -> str | None:
+        """Broad retrieval per sub-question (or original question) + primary context to detect conflicting facts.
+
+        For multi-hop queries, sub-questions are used so the reranker evaluates each sub-topic
+        separately — avoids filtering out chunks that only address one part of a compound question.
+        """
+        try:
+            queries = sub_questions if sub_questions else [question]
+            seen_ids: set[str] = set()
+            broad_chunks: list[dict] = []
+            per_query_k = max(3, CONTRADICTION_CHECK_K // len(queries))
+            for q in queries:
+                for chunk in self.retriever.search(q, hypothetical=None, k=per_query_k):
+                    if chunk["id"] not in seen_ids:
+                        broad_chunks.append(chunk)
+                        seen_ids.add(chunk["id"])
+
+            combined = primary_context + "\n\n---\n\n" + format_sources(broad_chunks)
+            raw = self._llm(
+                CONTRADICTION_PROMPT.format(context=combined),
+                max_tokens=200,
+            )
+            raw = raw.strip()
+            if raw.startswith("```"):
+                raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+            data = json.loads(raw)
+            if data.get("contradiction"):
+                return data.get("note", "Conflicting information found in documents.")
+        except Exception:
+            pass
+        return None
+
     def answer(self, question: str) -> dict:
         """
         Full RAG pipeline with HyDE, sentence-window overlap, and conversation history:
@@ -125,18 +177,15 @@ class RAGAssistant:
 
         if query_type == "multi_hop":
             sub_questions = self.decompose_query(retrieval_query)
-            all_chunks: list[dict] = []
+            chunks: list[dict] = []
             seen_ids: set[str] = set()
 
             for sub_q in sub_questions:
                 hypothetical = self._generate_hypothetical(sub_q)
                 for chunk in self.retriever.search(sub_q, hypothetical=hypothetical):
                     if chunk["id"] not in seen_ids:
-                        all_chunks.append(chunk)
+                        chunks.append(chunk)
                         seen_ids.add(chunk["id"])
-
-            chunks = self.retriever.rerank(retrieval_query, all_chunks, k=7)
-            chunks = [self.retriever._expand_chunk(c) for c in chunks]
         else:
             sub_questions = []
             hypothetical = self._generate_hypothetical(retrieval_query)
@@ -154,7 +203,16 @@ class RAGAssistant:
             }
 
         context = format_sources(chunks)
+        contradiction_note = self._check_contradiction(
+            question, context, sub_questions=sub_questions if sub_questions else None
+        )
+
         user_message = f"Context documents:\n\n{context}\n\n---\n\nQuestion: {question}"
+        if contradiction_note:
+            user_message += (
+                f"\n\n⚠️ Opozorilo: Dokumenti vsebujejo nasprotujoče si informacije — "
+                f"{contradiction_note}. Razreši protislovje eksplicitno v odgovoru."
+            )
 
         recent_history = self.history[-(MAX_HISTORY_TURNS * 2):]
         messages = (
