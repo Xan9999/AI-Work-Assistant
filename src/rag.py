@@ -14,7 +14,7 @@ load_dotenv()
 MODEL = os.getenv("CHATGPT_MODEL", "gpt-4o-mini")
 RERANK_SCORE_THRESHOLD = -6.0
 MAX_HISTORY_TURNS = 3
-CONTRADICTION_CHECK_K = 10
+CONTRADICTION_CHECK_K = 15
 
 
 SYSTEM_PROMPT = """You are an internal AI assistant for Nexus Consulting d.o.o., an IT consulting firm.
@@ -53,6 +53,14 @@ HYDE_PROMPT = """Write a short, specific answer to the following question as if 
 Question: {question}
 
 Answer:"""
+
+
+ALTERNATIVE_PROMPT = """One possible answer to the question below is provided. Write a SHORT, different, conflicting answer that a different document might state — use a different date, number, name, or status. Do not explain, do not hedge. Write only the alternative answer.
+
+Question: {question}
+Known answer: {known_answer}
+
+Alternative answer:"""
 
 
 CONTRADICTION_PROMPT = """You are checking whether the provided document excerpts contain conflicting factual claims about the same topic.
@@ -127,24 +135,48 @@ class RAGAssistant:
         best_score = max(c.get("rerank_score", 0.0) for c in chunks)
         return best_score > RERANK_SCORE_THRESHOLD
 
+    def _generate_alternative(self, question: str, known_answer: str) -> str | None:
+        """Generate a plausible conflicting answer to attract contradicting documents via vector search."""
+        try:
+            return self._llm(
+                ALTERNATIVE_PROMPT.format(question=question, known_answer=known_answer),
+                max_tokens=80,
+            )
+        except Exception:
+            return None
+
     def _check_contradiction(
         self,
         question: str,
         primary_context: str,
         sub_questions: list[str] | None = None,
     ) -> str | None:
-        """Broad retrieval per sub-question (or original question) + primary context to detect conflicting facts.
+        """Broad retrieval per sub-question + alternative-HyDE pass to surface contradicting documents.
 
-        For multi-hop queries, sub-questions are used so the reranker evaluates each sub-topic
-        separately — avoids filtering out chunks that only address one part of a compound question.
+        Two retrieval passes:
+        1. Per-sub-question (no HyDE): broad coverage of the topic
+        2. Alternative-HyDE: generate a conflicting answer, use it as hypothetical to attract
+           documents that state a different value — the opposite of standard HyDE
         """
         try:
             queries = sub_questions if sub_questions else [question]
             seen_ids: set[str] = set()
             broad_chunks: list[dict] = []
             per_query_k = max(3, CONTRADICTION_CHECK_K // len(queries))
+
+            # Pass 1: per-sub-question broad retrieval (no HyDE)
             for q in queries:
                 for chunk in self.retriever.search(q, hypothetical=None, k=per_query_k):
+                    if chunk["id"] not in seen_ids:
+                        broad_chunks.append(chunk)
+                        seen_ids.add(chunk["id"])
+
+            # Pass 2: alternative-HyDE — extract a hint from primary context and search
+            # for documents that disagree with it
+            first_chunk_text = broad_chunks[0]["text"] if broad_chunks else ""
+            alternative = self._generate_alternative(question, first_chunk_text[:300])
+            if alternative:
+                for chunk in self.retriever.search(question, hypothetical=alternative, k=5):
                     if chunk["id"] not in seen_ids:
                         broad_chunks.append(chunk)
                         seen_ids.add(chunk["id"])
