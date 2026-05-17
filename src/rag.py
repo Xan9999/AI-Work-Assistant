@@ -24,9 +24,11 @@ Rules:
 1. Base your answer strictly on the provided context. Do not add information from outside the documents.
 2. Always cite your sources: mention the document name and section (e.g., "According to [Source 1: Kova ERP Proposal — Financial Offer]...").
 3. If the provided context does not contain enough information to answer, say explicitly: "Based on the available documents, I cannot answer this question." Then briefly explain what is missing.
-4. If documents contain contradictory information, explicitly flag the contradiction: "Note: documents contain conflicting information — [explain both versions]."
-5. For outdated documents, note when information may be stale.
-6. Be concise but complete. Use bullet points for lists."""
+4. When documents contain conflicting dates or values for the same event, report the value from the most recently dated document as authoritative, and list all versions chronologically (e.g. "Originally planned June 2024, revised September 2024, final confirmed December 15, 2024 per November memo"). Do not silently pick one version.
+5. If documents contain contradictory information that cannot be resolved by document date, explicitly flag the contradiction: "Note: documents contain conflicting information — [explain both versions]."
+6. For outdated documents, note when information may be stale.
+7. For questions asking "which projects", "which team members", or "list all X", your answer must be exhaustive — scan ALL provided sources and include every matching entity, not just the most prominent one.
+8. Be concise but complete. Use bullet points for lists."""
 
 
 CLASSIFY_PROMPT = """Classify this question as either "simple" or "multi_hop".

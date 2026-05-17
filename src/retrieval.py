@@ -26,6 +26,7 @@ RRF_K = 60
 RETRIEVAL_TOP_K = 20
 RERANK_TOP_K = 5
 MATRIX_KEYWORDS = {"ocena", "kompetenca", "matrika", "certifikat", "skill", "rating", "level", "izkušnje", "experience", "veščine"}
+ENUM_KEYWORDS = {"kateri", "which", "seznam", "list", "vsi", "all", "naštej", "enumerate", "projekti", "člani", "projects", "members"}
 
 
 class E5EmbeddingFunction(EmbeddingFunction):
@@ -180,7 +181,13 @@ class HybridRetriever:
         For matrix/competence queries, k is automatically raised to 8 to improve
         recall when values are spread across multiple table rows.
         """
-        effective_k = 8 if any(w in query.lower() for w in MATRIX_KEYWORDS) else k
+        q_lower = query.lower()
+        if any(w in q_lower for w in ENUM_KEYWORDS):
+            effective_k = max(k, 10)
+        elif any(w in q_lower for w in MATRIX_KEYWORDS):
+            effective_k = max(k, 8)
+        else:
+            effective_k = k
         bm25_results = self.bm25_search(query)
         vector_results = self.vector_search(hypothetical if hypothetical else query)
         fused = self.rrf_fusion(bm25_results, vector_results)
