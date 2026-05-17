@@ -1,0 +1,272 @@
+[
+  {
+    "id": "Q01",
+    "type": "simple_search",
+    "question": "What did Nexus Consulting propose to client Kova d.o.o. regarding ERP integration?",
+    "query_type_detected": "simple",
+    "actual_answer": "Nexus Consulting proposed the implementation of the SAP S/4HANA 2023 system to Kova d.o.o. as a replacement for their existing Microsoft Dynamics NAV 2016. Key points of the proposal include:\n\n- **Project Duration**: 9 months, executed in five phases.\n- **Included SAP Modules**:\n  - **FI — Finance**: Full implementation\n  - **CO — Controlling**: Basic configuration\n  - **MM — Material Management**: Full implementation\n  - **SD — Sales & Distribution**: Full implementation\n  - **AA — Asset Accounting**: Full implementation\n  - **PM — Plant Maintenance** and **HR — Human Resources**: Not included in the scope.\n\n- **Integrations**:\n  - Magento 2 for e-commerce via custom Python middleware.\n  - Manhattan Associates Warehouse Management System (WMS) using SAP standard interfaces.\n  - Automatic bank statement import through SAP Multi-Bank Connectivity.\n\n- **Data Migration**: From Microsoft Dynamics NAV 2016, including account plans, partners (about 1,200 records), items, fixed assets, and open documents using SAP LTMC (Legacy Transfer and Migration Cockpit) (According to [Source 1: Projektna ponudba — Implementacija SAP S/4HANA — 1. Povzetek]).",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 17.24,
+    "scores": {
+      "factual_correctness": 2,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is mostly correct but contains minor inaccuracies regarding project value and go-live date, while it appropriately cites sources and confidently addresses the query.",
+      "total": 11,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q02",
+    "type": "simple_search",
+    "question": "Who on the Nexus team is a specialist in AWS and what are their certifications?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "On the Nexus Consulting team, the following individuals are specialists in AWS along with their certifications:\n\n- **Luka Zupan**\n  - AWS Solutions Architect Associate\n  - AWS DevOps Professional\n\n- **Tomaž Kržič**\n  - AWS Solutions Architect Professional (in preparation) (According to [Source 5: Projektna ponudba — Migracija v oblak (AWS) — 6. Ekipa Nexus za projekt]).",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 13.29,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is partially correct as it mentions Luka Zupan but omits important details about his certifications and inaccurately introduces Tomaž Kržič without clarity on his status.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q03",
+    "type": "simple_search",
+    "question": "What was the total contract value of the Helios BI project and when was it completed?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "The total contract value of the Helios BI project was 68,000 € (excluding VAT), and the project was successfully completed and accepted in September 2022 (According to [Source 1: Projektno poročilo — Helios BI implementacija — Projekt: HELIOS-2022-BI | ZASTARELO POROČILO]).",
+    "sources_retrieved": 6,
+    "elapsed_seconds": 20.2,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually accurate regarding the contract value and completion date but lacks specificity in citing the source document.",
+      "total": 11,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q04",
+    "type": "simple_search",
+    "question": "What programming language and framework is used for the Meridian web platform backend?",
+    "query_type_detected": "simple",
+    "actual_answer": "The backend of the Meridian web platform uses:\n\n- **Programming Language**: Python (version 3.12)\n- **Framework**: Django (version 5.0) (According to [Source 2: Tehnična specifikacija — Meridian Web Platform — 2. Backend arhitektura]).",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 9.68,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually accurate, cites a specific source clearly, expresses the information confidently, and does not involve any contradictions.",
+      "total": 12,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q05",
+    "type": "simple_search",
+    "question": "What was the total proposed value of the Atlas cloud migration project?",
+    "query_type_detected": "simple",
+    "actual_answer": "The total proposed value of the Atlas cloud migration project was 142,000 € (excluding VAT) (According to [Source 1: Projektna ponudba — Migracija v oblak (AWS) — 1. Povzetek]).",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 9.18,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 3,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The AI assistant provided a fully correct value for the project, accurately cited the source, handled uncertainty well, and there were no contradictions to address.",
+      "total": 12,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q06",
+    "type": "simple_search",
+    "question": "Who was the project manager for the DataSync integration project?",
+    "query_type_detected": "simple",
+    "actual_answer": "The project manager for the DataSync integration project was Sara Petric (According to [Source 1: Sestanek pregleda tveganj — DataSync projekt — Prisotni]).",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 6.2,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually accurate, cites sources appropriately, and handles the question confidently without uncertainties or contradictions.",
+      "total": 11,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q07",
+    "type": "multi_hop",
+    "question": "Which projects involved cloud migration and what were the key lessons learned across those projects?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "The projects that involved cloud migration were:\n\n1. **ATLAS-2023-CLOUD**: Migration of Atlas d.o.o. to AWS eu-central-1.\n2. **ARGON-2024-AZURE**: Migration of Argon d.o.o. to Azure West Europe.\n\n### Key Lessons Learned Across the Projects:\n\n- **Lift & Shift is Often the Right Decision**:\n  - For Atlas, a shift to ambitious re-architecture was compromised to a lift & shift into Windows containers due to delays, which resulted in a faster and reliable outcome.\n  - For Argon, lift & shift was the only real option given the tight deadlines.\n  - Recommendation: Default to lift & shift for time-sensitive projects; plan re-architecture as a separate phase after stabilization in the cloud.\n\n- **Terraform is Essential**:\n  - Both projects utilized Terraform for infrastructure, leading to:\n    - Repeatable deployments across environments without manual clicks.\n    - Git history for infrastructure changes.\n    - Quick recovery after incidents (e.g., full VNet recovery for Argon took 12 minutes).\n  - Recommendation: Use Terraform from the first day without exceptions.\n\n- **Assessment Before Migration Saves Time**:\n  - Atlas did not conduct a formal workload assessment, leading to incorrect sizing of two EC2 instances, which needed adjustments after two weeks.\n  - Argon used Azure Migrate Assessment, achieving accurate sizing within ±10%.\n  - Recommendation: Use Azure Migrate or AWS Migration Evaluator for every project before starting (According to [Source 1: Tehnično poročilo — Naučene lekcije: Cloud migracije]).",
+    "sources_retrieved": 7,
+    "elapsed_seconds": 46.82,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually accurate and provides detailed lessons learned, but the source citation lacks specificity on the document name and section.",
+      "total": 11,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q08",
+    "type": "multi_hop",
+    "question": "Which team members have experience with both ERP systems and cloud platforms?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "The team members who have experience with both ERP systems and cloud platforms are:\n\n- **Sara Petric**:\n  - Cloud Platforms: AWS (2), Microsoft Azure (0)\n  - ERP Systems: Not specified in the provided documents, but is involved in projects.\n\n- **Luka Zupan**:\n  - Cloud Platforms: AWS (4), Microsoft Azure (3)\n  - ERP Systems: Not specified in the provided documents, but has relevant experience.\n\n- **Maja Horvat**:\n  - Cloud Platforms: Not specified in the provided documents for cloud platforms.\n  - ERP Systems: SAP S/4HANA, SAP Business One, Microsoft Dynamics NAV/BC, and Salesforce.\n\nNote: Specific values for cloud experience and ERP involvement are abstracted where not fully detailed in the documents (According to [Source 1: Matrika kompetenc ekipe Nexus Consulting — 2. Kompetencna matrika]).",
+    "sources_retrieved": 7,
+    "elapsed_seconds": 32.15,
+    "scores": {
+      "factual_correctness": 0,
+      "source_citation": 1,
+      "uncertainty_handling": 0,
+      "contradiction_handling": 3,
+      "reasoning": "The answer incorrectly identifies members who do not match the specified criteria and fails to provide accurate details about their ERP and cloud experience while mentioning vague source references.",
+      "total": 4,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q09",
+    "type": "multi_hop",
+    "question": "Which projects exceeded their original timeline and what were the reasons?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "The projects that exceeded their original timelines are:\n\n1. **MERKUR-2023-MOD**\n   - **Planned Duration**: 7 months\n   - **Actual Duration**: 7.5 months\n   - **Reason for Delay**:\n     - Specific reasons for exceeding the timeline are not detailed in the documents, but the project faced multiple phases of extensive work, including significant upgrades from PHP 7.2 to PHP 8.2 and challenges in migrating data from MySQL to PostgreSQL, which might have contributed to the extended duration (According to [Source 2: Zapisnik retrospektive — Projekt Merkur IT Modernizacija — Zaključek projekta]). \n\nNote: This is an overview based on available documents; exact factors causing the delay are not specified.",
+    "sources_retrieved": 7,
+    "elapsed_seconds": 39.2,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 2,
+      "contradiction_handling": 3,
+      "reasoning": "The answer presents only one project with vague details, missing multiple projects and their specific reasons for delay, which makes it partially correct.",
+      "total": 8,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q10",
+    "type": "multi_hop",
+    "question": "What clients did Nexus Consulting work with in 2023 and which projects were successfully completed?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "In 2023, Nexus Consulting worked with the following clients and successfully completed the corresponding projects:\n\n1. **Atlas d.o.o.**\n   - **Project**: ATLAS-2023-CLOUD\n   - **Completion**: Migration to AWS eu-central-1.\n\n2. **Argon d.o.o.**\n   - **Project**: ARGON-2024-AZURE\n   - **Completion**: Migration to Azure West Europe.\n\n3. **Merkur IT d.o.o.**\n   - **Project**: MERKUR-2023-MOD\n   - **Completion**: Modernization of web platform from monolithic PHP 7.2 application to microservices architecture in PHP 8.2 with React frontend (project acceptance signed on 2023-10-31) (According to [Source 1: Tehnično poročilo — Naučene lekcije: Cloud migracije]; [Source 2: Zaključno projektno poročilo — Merkur IT Modernizacija — 1. Povzetek projekta]). \n\nNote: The details for the projects with Atlas and Argon indicate they were scheduled for 2024, but they were included in the context of 2023 for the planning and execution phase.",
+    "sources_retrieved": 7,
+    "elapsed_seconds": 31.99,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer includes some correct projects but introduces inaccuracies regarding the clients and their project timelines, while citations are present but not entirely specific to the question at hand.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q11",
+    "type": "unanswerable",
+    "question": "Who is the CEO of Kova d.o.o.?",
+    "query_type_detected": "simple",
+    "actual_answer": "Based on the available documents, I cannot answer this question. The provided context does not mention the CEO of Kova d.o.o.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 9.33,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 0,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer accurately states the unavailability of the CEO's information, refuses appropriately, and does not encounter contradictions.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q12",
+    "type": "unanswerable",
+    "question": "What is the annual revenue of Nexus Consulting d.o.o.?",
+    "query_type_detected": "simple",
+    "actual_answer": "Based on the available documents, I cannot answer this question. The provided context does not include information regarding the annual revenue of Nexus Consulting d.o.o.",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 8.3,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 0,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The AI assistant correctly identified the question as unanswerable and accurately conveyed the lack of information while not providing any sources.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q13",
+    "type": "unanswerable",
+    "question": "What specific security vulnerabilities were found during the Atlas cloud migration penetration test?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "Based on the available documents, I cannot answer this question. The provided context does not include any information regarding security vulnerabilities found during the Atlas cloud migration penetration test.",
+    "sources_retrieved": 7,
+    "elapsed_seconds": 40.07,
+    "scores": {
+      "factual_correctness": 3,
+      "source_citation": 0,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 3,
+      "reasoning": "The answer is factually accurate and appropriately refuses to answer, but it does not cite specific sources.",
+      "total": 9,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q14",
+    "type": "trick_contradictory",
+    "question": "When did the Atlas cloud migration project go live?",
+    "query_type_detected": "simple",
+    "actual_answer": "The Atlas cloud migration project is scheduled to go live on December 15, 2024, as confirmed in a memo from Luka Zupan dated November 28, 2024. This date was agreed upon following a meeting with Mitja Ferlan from Atlas d.o.o. [According to Source 1: 33 Atlas Go Live Memo — Content].",
+    "sources_retrieved": 5,
+    "elapsed_seconds": 9.24,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 2,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 0,
+      "reasoning": "The answer fails to acknowledge the conflicting dates and incorrectly cites a memo that does not align with the historical revisions documented.",
+      "total": 6,
+      "max_total": 12
+    }
+  },
+  {
+    "id": "Q15",
+    "type": "trick_contradictory",
+    "question": "What technologies does Janez Novak know and at what skill level?",
+    "query_type_detected": "multi_hop",
+    "actual_answer": "According to the competency matrix, Janez Novak has the following skills and levels:\n\n### 1. Cloud Platforms\n- **AWS (general)**: 2 (Working experience)\n- **AWS EC2/VPC**: 2 (Working experience)\n- **AWS ECS/EKS**: 1 (Basic)\n- **AWS RDS**: 2 (Working experience)\n- **AWS S3/CloudFront**: 2 (Working experience)\n\n### 2. Programming Languages\n- **Python**: 3 (Experienced)\n- **Java**: 3 (Experienced)\n- **JavaScript/TypeScript**: 3 (Experienced)\n- **PHP**: 3 (Experienced)\n- **.NET/C#**: 2 (Working experience)\n- **SQL**: 3 (Experienced)\n- **ABAP (SAP)**: 2 (Working experience)\n\n### 3. DevOps and Infrastructure\n- **Docker**: 3 (Experienced)\n- **Kubernetes**: 2 (Working experience)\n- **Terraform**: 1 (Basic)\n- **GitHub Actions**: 3 (Experienced)\n- **Ansible**: 1 (Basic)\n- **Prometheus/Grafana**: 2 (Working experience)\n\n### 4. ERP and Business Applications\n- **SAP S/4HANA**: 1 (Basic)\n- **SAP Business One**: 2 (Working experience)\n- **Microsoft Dynamics NAV/BC**: 2 (Working experience)\n- **Salesforce**: 2 (Working experience)\n\n### 5. Databases and Analytics\n- **PostgreSQL**: 3 (Experienced)\n- **MySQL**: 3 (Experienced)\n- **SQL Server**: 2 (Working experience)\n- **MongoDB**: 2 (Working experience)\n- **Redis**: 3 (Experienced)\n- **Tableau**: 1 (Basic)\n- **Power BI**: 0 (No knowledge)\n- **dbt**: 0 (No knowledge)\n\nOverall, Janez Novak has a range of skills across cloud platforms, programming languages, DevOps, ERP systems, and databases, demonstrating various levels of proficiency from basic to expert [According to Source 1: Matrika kompetenc ekipe Nexus Consulting — 2. Kompetencna matrika].",
+    "sources_retrieved": 7,
+    "elapsed_seconds": 39.39,
+    "scores": {
+      "factual_correctness": 1,
+      "source_citation": 1,
+      "uncertainty_handling": 3,
+      "contradiction_handling": 0,
+      "reasoning": "The answer includes factual inaccuracies compared to the expected information and does not address the discrepancies between the 2023 and 2024 matrices.",
+      "total": 5,
+      "max_total": 12
+    }
+  }
+]

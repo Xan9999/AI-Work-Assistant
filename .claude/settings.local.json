@@ -3,7 +3,9 @@
     "allow": [
       "Bash(pip install *)",
       "Bash(python src/ingest.py)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(python src/download_models.py)",
+      "Bash(findstr /v \"Warning warn HUB symlink developer disable LOAD REPORT UNEXPECTED position_ids Notes\")"
     ]
   }
 }

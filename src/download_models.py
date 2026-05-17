@@ -13,7 +13,7 @@ MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
 MODELS = [
     ("embedding", SentenceTransformer, "intfloat/multilingual-e5-base"),
-    ("reranker",  CrossEncoder,        "cross-encoder/ms-marco-MiniLM-L-6-v2"),
+    ("reranker",  CrossEncoder,        "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"),
 ]
 
 for label, cls, name in MODELS:
@@ -26,4 +26,4 @@ for label, cls, name in MODELS:
     model.save(str(dest))
     print(f"  Saved to {dest}")
 
-print("\nDone. Models are now stored in data/models/ and will be used instead of the HuggingFace cache.")
+print("\nDone. Models are now stored in data/models/.")

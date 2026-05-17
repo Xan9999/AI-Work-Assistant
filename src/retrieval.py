@@ -1,5 +1,10 @@
 """
 Hybrid retrieval: BM25 + vector search fused with RRF, then cross-encoder reranked.
+
+Improvements:
+- multilingual reranker (mmarco-mMiniLMv2) handles Slovenian documents
+- sentence-window overlap: each returned chunk is expanded with its neighbors
+- HyDE: vector_search() accepts a pre-generated hypothetical answer
 """
 
 import pickle
@@ -14,7 +19,7 @@ DB_DIR = Path(__file__).parent.parent / "data" / "chroma_db"
 MODEL_DIR = Path(__file__).parent.parent / "data" / "models"
 
 EMBEDDING_MODEL = "intfloat/multilingual-e5-base"
-RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+RERANKER_MODEL = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
 COLLECTION_NAME = "nexus_docs"
 
 RRF_K = 60
@@ -25,8 +30,7 @@ RERANK_TOP_K = 5
 class E5EmbeddingFunction(EmbeddingFunction):
     """
     ChromaDB embedding function with 'passage: ' prefix for E5 models.
-    Used when loading the collection — ChromaDB needs a matching EF to deserialize.
-    Actual query embedding is done manually with 'query: ' prefix in vector_search().
+    Actual query embedding uses 'query: ' prefix and is done manually in vector_search().
     """
 
     def __init__(self, model_name: str):
@@ -55,7 +59,13 @@ class HybridRetriever:
         self.collection = client.get_collection(COLLECTION_NAME, embedding_function=self.ef)
 
         print(f"Loading reranker ({RERANKER_MODEL})...")
-        self.reranker = CrossEncoder(RERANKER_MODEL)
+        local_reranker = MODEL_DIR / RERANKER_MODEL.replace("/", "--")
+        reranker_path = str(local_reranker) if local_reranker.exists() else RERANKER_MODEL
+        self.reranker = CrossEncoder(reranker_path)
+
+    # ------------------------------------------------------------------ #
+    # Core retrieval                                                       #
+    # ------------------------------------------------------------------ #
 
     def bm25_search(self, query: str, k: int = RETRIEVAL_TOP_K) -> list[tuple[int, float]]:
         tokens = query.lower().split()
@@ -63,14 +73,16 @@ class HybridRetriever:
         top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
         return [(idx, float(scores[idx])) for idx in top_indices]
 
-    def vector_search(self, query: str, k: int = RETRIEVAL_TOP_K) -> list[tuple[str, float]]:
-        # E5 requires "query: " prefix for queries (different from "passage: " used at index time)
-        query_embedding = self.ef.model.encode(
-            f"query: {query}", normalize_embeddings=True
+    def vector_search(self, text: str, k: int = RETRIEVAL_TOP_K) -> list[tuple[str, float]]:
+        """
+        text can be either a raw query or a HyDE hypothetical answer —
+        caller decides which to pass. Always uses 'query: ' prefix for E5.
+        """
+        embedding = self.ef.model.encode(
+            f"query: {text}", normalize_embeddings=True
         ).tolist()
-
         results = self.collection.query(
-            query_embeddings=[query_embedding],
+            query_embeddings=[embedding],
             n_results=k,
             include=["distances"],
         )
@@ -119,12 +131,56 @@ class HybridRetriever:
 
         return results
 
-    def search(self, query: str, k: int = RERANK_TOP_K) -> list[dict]:
-        """Full pipeline: BM25 + vector → RRF fusion → rerank → top k."""
+    # ------------------------------------------------------------------ #
+    # Sentence-window overlap                                              #
+    # ------------------------------------------------------------------ #
+
+    def _expand_chunk(self, chunk: dict) -> dict:
+        """
+        Expand a chunk with its immediate neighbors from the same document.
+        ChromaDB stores only the core chunk (for accurate embedding), but GPT
+        receives the expanded version (for richer context).
+        """
+        doc_path = chunk["metadata"]["doc_path"]
+        idx = chunk["metadata"]["chunk_idx"]
+
+        parts = []
+
+        prev_id = f"{doc_path}::chunk_{idx - 1}"
+        prev_idx = self._id_to_idx.get(prev_id)
+        if prev_idx is not None:
+            parts.append(self.chunks[prev_idx]["text"])
+
+        parts.append(chunk["text"])
+
+        next_id = f"{doc_path}::chunk_{idx + 1}"
+        next_idx = self._id_to_idx.get(next_id)
+        if next_idx is not None:
+            parts.append(self.chunks[next_idx]["text"])
+
+        expanded = dict(chunk)
+        expanded["text"] = "\n\n".join(parts)
+        return expanded
+
+    # ------------------------------------------------------------------ #
+    # Public interface                                                     #
+    # ------------------------------------------------------------------ #
+
+    def search(
+        self,
+        query: str,
+        hypothetical: str | None = None,
+        k: int = RERANK_TOP_K,
+    ) -> list[dict]:
+        """
+        Full pipeline:
+          BM25(query) + vector(hypothetical or query) → RRF → rerank(query) → expand
+        """
         bm25_results = self.bm25_search(query)
-        vector_results = self.vector_search(query)
+        vector_results = self.vector_search(hypothetical if hypothetical else query)
         fused = self.rrf_fusion(bm25_results, vector_results)
-        return self.rerank(query, fused, k=k)
+        ranked = self.rerank(query, fused, k=k)
+        return [self._expand_chunk(c) for c in ranked]
 
 
 def format_sources(chunks: list[dict]) -> str:

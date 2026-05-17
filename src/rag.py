@@ -1,5 +1,5 @@
 """
-RAG assistant: query classification, multi-hop decomposition, answer generation.
+RAG assistant: query classification, multi-hop decomposition, HyDE, answer generation.
 """
 
 import os
@@ -13,7 +13,7 @@ load_dotenv()
 
 MODEL = os.getenv("CHATGPT_MODEL", "gpt-4o-mini")
 RERANK_SCORE_THRESHOLD = -6.0
-MAX_HISTORY_TURNS = 3  # how many past Q&A pairs to include in context
+MAX_HISTORY_TURNS = 3
 
 
 SYSTEM_PROMPT = """You are an internal AI assistant for Nexus Consulting d.o.o., an IT consulting firm.
@@ -45,11 +45,18 @@ Original question: {question}
 Reply with JSON only: {{"sub_questions": ["...", "...", ...]}}"""
 
 
+HYDE_PROMPT = """Write a short, specific answer to the following question as if you were an IT consultant at a consulting firm. Include specific names, dates, and technical details where relevant. Do not say you don't know — make a plausible, concrete answer.
+
+Question: {question}
+
+Answer:"""
+
+
 class RAGAssistant:
     def __init__(self):
         self.retriever = HybridRetriever()
         self.client = OpenAI(api_key=os.environ["CHATGPT_API_KEY"].strip())
-        self.history: list[dict] = []  # {"role": "user"|"assistant", "content": "..."}
+        self.history: list[dict] = []
 
     def clear_history(self) -> None:
         self.history = []
@@ -76,12 +83,19 @@ class RAGAssistant:
         except Exception:
             return [question]
 
+    def _generate_hypothetical(self, question: str) -> str:
+        """
+        HyDE: generate a plausible answer before retrieval.
+        The hypothetical answer is semantically closer to actual document passages
+        than the raw question, improving vector search recall.
+        """
+        try:
+            return self._llm(HYDE_PROMPT.format(question=question), max_tokens=200)
+        except Exception:
+            return question  # fallback: use original question
+
     def _retrieval_query(self, question: str) -> str:
-        """
-        For very short follow-up questions, prepend the last user question
-        so the retriever has enough signal to find relevant chunks.
-        e.g. "and the costs?" → "What did Nexus propose to Kova? and the costs?"
-        """
+        """Expand short follow-up questions with previous question for retrieval context."""
         if len(question.split()) < 6 and self.history:
             last_user = next(
                 (m["content"] for m in reversed(self.history) if m["role"] == "user"),
@@ -98,11 +112,13 @@ class RAGAssistant:
 
     def answer(self, question: str) -> dict:
         """
-        Full RAG pipeline with conversation history:
-        1. Expand short follow-up questions for retrieval
-        2. Classify and retrieve context
-        3. Build messages = system + recent history + new context + question
-        4. Generate answer, update history
+        Full RAG pipeline with HyDE, sentence-window overlap, and conversation history:
+        1. Expand short follow-up questions
+        2. Classify (simple / multi_hop)
+        3. Generate hypothetical answer (HyDE) for vector search
+        4. Retrieve with hybrid search — BM25(query) + vector(hypothetical)
+        5. Rerank with original query, expand chunks with neighbors
+        6. Generate answer with history context
         """
         retrieval_query = self._retrieval_query(question)
         query_type = self.classify_query(retrieval_query)
@@ -113,15 +129,18 @@ class RAGAssistant:
             seen_ids: set[str] = set()
 
             for sub_q in sub_questions:
-                for chunk in self.retriever.search(sub_q):
+                hypothetical = self._generate_hypothetical(sub_q)
+                for chunk in self.retriever.search(sub_q, hypothetical=hypothetical):
                     if chunk["id"] not in seen_ids:
                         all_chunks.append(chunk)
                         seen_ids.add(chunk["id"])
 
             chunks = self.retriever.rerank(retrieval_query, all_chunks, k=7)
+            chunks = [self.retriever._expand_chunk(c) for c in chunks]
         else:
             sub_questions = []
-            chunks = self.retriever.search(retrieval_query)
+            hypothetical = self._generate_hypothetical(retrieval_query)
+            chunks = self.retriever.search(retrieval_query, hypothetical=hypothetical)
 
         if not self._is_context_useful(chunks):
             answer_text = "Based on the available documents, I cannot answer this question. No sufficiently relevant information was found in the document corpus."
@@ -137,7 +156,6 @@ class RAGAssistant:
         context = format_sources(chunks)
         user_message = f"Context documents:\n\n{context}\n\n---\n\nQuestion: {question}"
 
-        # Build message list: system + last N turns + new user message
         recent_history = self.history[-(MAX_HISTORY_TURNS * 2):]
         messages = (
             [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -153,7 +171,6 @@ class RAGAssistant:
 
         answer_text = response.choices[0].message.content.strip()
 
-        # Store only the bare question and answer in history (not the full context block)
         self.history.append({"role": "user", "content": question})
         self.history.append({"role": "assistant", "content": answer_text})
 
