@@ -58,21 +58,53 @@ Dodatno: reranker `predict()` zdaj kliče z `batch_size=4` (namesto privzetih 32
 
 ## Implementirana izboljšava: zaznavanje protislovij
 
-Po generiranju odgovora sistem požene **drugi retrieval** z istim vprašanjem, tokrat brez HyDE in z `k=10` namesto `k=5`. Razlog za odsotnost HyDE: pri prvotnem iskanju HyDE usmeri vektorsko iskanje k dokumentom, ki potrjujejo odgovor. Za zaznavanje protislovij pa želimo široko pokritost teme — neodvisno od vsebine odgovora.
+Pred generiranjem odgovora sistem požene **dodatni retrieval** brez HyDE, da zbere širok nabor odlomkov o temi. Razlog za odsotnost HyDE: pri prvotnem iskanju HyDE usmeri vektorsko iskanje k dokumentom, ki potrjujejo določen odgovor. Za zaznavanje protislovij pa želimo pokritost teme neodvisno od vsebine odgovora.
 
-Vseh 10 odlomkov skupaj z generiranim odgovorom pošljemo GPT-ju z vprašanjem: *"Ali kateri odlomek navaja drugačno vrednost za isto dejstvo?"* Če je odgovor da, se opozorilo doda na konec odgovora (`⚠️ Opozorilo — nasprotujoče si informacije: ...`).
+Zbrane odlomke GPT pregleda z vprašanjem: *"Ali kateri par odlomkov navaja eksplicitno drugačno vrednost za isto dejstvo?"* Prompt je omejen na prava protislovja (različni datumi, različne številke) in ne sproži za dopolnilne informacije ali različni vlogi (npr. CEO vs IT direktor). Če je protislovje zaznano, se opozorilo vstavi **v kontekst pred generiranjem odgovora** — GPT tako razreši protislovje eksplicitno znotraj odgovora, namesto da dobi post-hoc prilepljeno opozorilo, ki ga ne upošteva.
+
+**Nadgradnja za večskočne poizvedbe:** pri večskočnih vprašanjih je bil prvotni broad retrieval narejen z originalnim sestavljenim vprašanjem. To je problem, ker reranker odlomek o ERP veščinah oceni slabo pri vprašanju "kdo ima ERP *in* cloud izkušnje?" — en odlomek ne more odgovoriti na oba dela hkrati. Popravek: broad retrieval za zaznavanje protislovij se zdaj izvaja ločeno za vsako podvprašanje (po `CONTRADICTION_CHECK_K // n` odlomkov na podvprašanje), rezultati pa se združijo. Reranker vsako podtemo oceni v svojem kontekstu.
 
 **Rezultati po implementaciji:**
 - Neodgovorljiva vprašanja: 75 % → **100 %** (popravek SC — ko ni dokumentov, ni kaj citirati; to ni napaka citiranja)
 - Q15 CH: 0 → 2 (protislovje med matrikama 2023/2024 je zaznano)
-- Q14 CH: ostaja 0 — memo sam po sebi že razloži revizijsko zgodovino, GPT tega ne interpretira kot protislovje
+- Q14 CH: ostaja 0 — glejte razdelek spodaj
 - **Skupaj: 80.0 % → 83.3 %**
+
+---
+
+## Implementirana izboljšava: adaptivno število vrnjenih odlomkov
+
+Analiza napak je pokazala dva vzorca, kjer privzeti `k=5` sistematično vrne premalo odlomkov:
+
+1. **Matrična vprašanja** — vrednost je presek vrstice (oseba) in stolpca (veščina); en odlomek pokrije le del tabele, zato je potrebnih več odlomkov za celotno sliko.
+2. **Enumeracijska vprašanja** — vprašanja tipa "kateri projekti / kateri člani" zahtevajo pokritost celotnega korpusa, ne le najboljšega zadetka.
+
+Popravek v `src/retrieval.py`: `search()` pregleda poizvedbo in avtomatsko poveča `k`:
+- Besede iz `ENUM_KEYWORDS` (kateri, which, seznam, list, vsi, all, projekti, člani…) → `k = max(k, 10)`
+- Besede iz `MATRIX_KEYWORDS` (ocena, kompetenca, matrika, certifikat, skill, rating…) → `k = max(k, 8)`
+- Ostale poizvedbe → `k` nespremenjen
+
+Enumeracijska pravila imajo prednost pred matričnimi. Ker se `k` poveča samo pri rerankerju (ne pri BM25 ali vektorskem iskanju), dodaten strošek je minimalen.
+
+---
+
+## Implementirana izboljšava: navodila za razreševanje protislovij in izčrpnost
+
+Analiza evalvacijskih napak je pokazala dva vzorca napačnih odgovorov, ki jih ni povzročal pomanjkljiv retrieval, temveč pomanjkljiva navodila za generiranje:
+
+**Datumska protislovja (Q14):** sistem je zaznal protislovje med dokumenti, a GPT je v odgovoru obdržal datum iz prvega najdenega dokumenta (september 2024) namesto datuma iz najnovejšega dokumenta (december 2024). Problem ni bil v iskanju, temveč v odsotnosti eksplicitnega pravila za razreševanje.
+
+**Nepopolna enumeracija (Q09, Q10, SL09):** vprašanja kot "kateri projekti so presegli rok?" so dobila odgovor z 1–2 projekti namesto vseh, ker GPT ni imel navodila, da mora pregledati vse vire.
+
+Popravek v `SYSTEM_PROMPT` (`src/rag.py`):
+- **Pravilo 4:** pri protislovnih datumih ali vrednostih za isto entiteto izberi vrednost iz **najnovejšega dokumenta** kot merodajno in naštej vse verzije kronološko. Brez tihe izbire ene verzije.
+- **Pravilo 7:** za vprašanja z "kateri projekti / kateri člani / seznam vseh X" mora biti odgovor **izčrpen** — preglej vse vire in vključi vsako ujemajočo entiteto, ne le najprominentnejše.
 
 ---
 
 ## Kaj bi naredil drugače z več časa
 
-Prioriteta bi bila **boljše zaznavanje revizijskih protislovij** (Q14): v prompt bi eksplicitno dodal navodilo, da se zazna tudi situacija, ko različni dokumenti navajajo različne vrednosti za isto entiteto — četudi novejši dokument starejšega razlaga ali nadomešča.
+Prioriteta bi bila **popolno razreševanje revizijskih protislovij** (Q14 CH ostaja 0): kljub implementiranemu pravilu 4 v system promptu sistem še vedno ne razloži vseh štirih datumskih revizij v enem odgovoru. Problem je v retrieval fazi — ne vsi štirje dokumenti z datumi pristanejo med top-k rezultati hkrati. Rešitev bi bila eksplicitna detekcija "revizijske verige": pri vprašanjih o datumih za isti projekt zberi odlomke iz vseh dokumentov, ki omenjajo projekt in datum, ne le tistih z najvišjim rerank score.
 
 Druga prioriteta: **vzporedni HyDE klici** z `asyncio` za večskočne poizvedbe — 4 podvprašanja bi se obdelala hkrati, kar bi latenco zmanjšalo s ~35 s na ~15 s.
 
