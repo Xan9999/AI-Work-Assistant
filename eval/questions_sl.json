@@ -1,0 +1,92 @@
+[
+  {
+    "id": "SL01",
+    "type": "simple_search",
+    "question": "Katere certifikate ima Luka Zupan in kdaj jih je pridobil?",
+    "expected_answer": "Luka Zupan ima tri certifikate: AWS Solutions Architect Associate (2022), AWS DevOps Professional (2023) in Azure Administrator Associate AZ-104 (2024). Vsi so navedeni v matriki kompetenc 2024."
+  },
+  {
+    "id": "SL02",
+    "type": "simple_search",
+    "question": "Kdaj je bil zaključen projekt Argon Azure Cloud Migration in ali je bil zaključen v roku?",
+    "expected_answer": "Projekt Argon Azure Cloud Migration je bil zaključen 2024-05-31, acceptance report pa je bil podpisan 5. junija 2024. Projekt je bil zaključen točno v roku — trdi rok je bil določen z datumom poteka pogodbe za podatkovni center Argon d.o.o."
+  },
+  {
+    "id": "SL03",
+    "type": "simple_search",
+    "question": "Kdo je bil vodja projekta Kova ERP in kateri razvijalec je delal na projektu?",
+    "expected_answer": "Vodja projekta Kova ERP je bila Ana Kovač (Nexus Consulting). Na projektu je kot razvijalec delal Janez Novak."
+  },
+  {
+    "id": "SL04",
+    "type": "simple_search",
+    "question": "Kaj je bil korenski vzrok incidenta pri projektu DataSync?",
+    "expected_answer": "Korenski vzrok incidenta DataSync je bila odsotnost schema validation pri vstopu payloada — napaka se ni odkrila, dokler ni prišlo do dejanske napake pri procesiranju. Incident se je zgodil 3. avgusta 2024."
+  },
+  {
+    "id": "SL05",
+    "type": "simple_search",
+    "question": "Kateri oblačni ponudnik je bil izbran za projekt Atlas in v kateri regiji je bila infrastruktura postavljena?",
+    "expected_answer": "Za projekt Atlas je bil izbran Amazon Web Services (AWS). Infrastruktura je bila postavljena v AWS regiji eu-central-1 (Frankfurt)."
+  },
+  {
+    "id": "SL06",
+    "type": "simple_search",
+    "question": "Katere SAP certifikate ima Maja Horvat?",
+    "expected_answer": "Maja Horvat ima dva SAP certifikata: SAP Certified Application Associate (FI) iz leta 2018 in SAP Certified Application Associate (MM) iz leta 2019."
+  },
+  {
+    "id": "SL07",
+    "type": "multi_hop",
+    "question": "Kateri člani ekipe imajo oceno 3 ali več pri orodju Docker in kateri projekti so vključevali kontejnerizacijo?",
+    "expected_answer": "Oceno 3 ali več pri Dockerju imajo: Luka Zupan (4), Janez Novak (3). Oceno 2 imajo Ana Kovač, Sara Petric, Nina Vidmar, Tomaž Kržič. Projekt Atlas Cloud Migration je vključeval kontejnerizacijo (Docker/ECS) kot del AWS migracije."
+  },
+  {
+    "id": "SL08",
+    "type": "multi_hop",
+    "question": "Primerjaj oblačni arhitekturi projektov Atlas (AWS) in Argon (Azure) — kateri oblačni ponudnik je bil izbran pri vsakem in zakaj?",
+    "expected_answer": "Atlas (AWS): izbran AWS eu-central-1 (Frankfurt), ker je stranka Atlas d.o.o. že imela AWS račun in zahtevano bližino podatkov v EU. Argon (Azure): izbran Microsoft Azure West Europe (Amsterdam), verjetno ker je stranka Argon d.o.o. imela obstoječe Microsoft licenčne pogodbe (M365). Oba projekta sta bila uspešno zaključena."
+  },
+  {
+    "id": "SL09",
+    "type": "multi_hop",
+    "question": "Kateri projekti Nexus Consultinga so imeli incident ali resno tehnično težavo med izvedbo in kako so bile rešene?",
+    "expected_answer": "DataSync projekt je imel produkcijski incident (3. avgusta 2024) — korenski vzrok: odsotnost schema validation. Rešitev: dodan schema validator, 4 ure downtime. Atlas projekt je imel zamudo pri WAF pravilih. Kova ERP je imel kompleksno migracijo podatkov iz NAV."
+  },
+  {
+    "id": "SL10",
+    "type": "multi_hop",
+    "question": "Kateri član ekipe ima hkrati izkušnje s SAP sistemi (ocena ≥ 2) in z orodjem Kubernetes (ocena ≥ 1)?",
+    "expected_answer": "Janez Novak ima SAP Business One oceno 2 in Kubernetes oceno 2 (matrika 2024). Je edini član ekipe z oceno ≥ 2 pri SAP Business One in hkrati z oceno ≥ 1 pri Kubernetesu. Tomaž Kržič ima SAP oceno 1 in Kubernetes 2."
+  },
+  {
+    "id": "SL11",
+    "type": "unanswerable",
+    "question": "Koliko zaposlenih ima podjetje Nexus Consulting skupaj?",
+    "expected_answer": "Iz razpoložljivih dokumentov ni mogoče odgovoriti na to vprašanje. Dokumenti omenjajo posamezne člane ekipe, a ne navajajo skupnega števila zaposlenih."
+  },
+  {
+    "id": "SL12",
+    "type": "unanswerable",
+    "question": "Kakšni so načrti Nexus Consultinga za pridobivanje novih strank v letu 2025?",
+    "expected_answer": "Dokumenti ne vsebujejo informacij o prodajni strategiji ali načrtih za pridobivanje strank za leto 2025. Na to vprašanje ni mogoče odgovoriti iz obstoječega korpusa."
+  },
+  {
+    "id": "SL13",
+    "type": "unanswerable",
+    "question": "Kateri je uradni naslov sedeža podjetja Nexus Consulting d.o.o.?",
+    "expected_answer": "Naslov sedeža podjetja Nexus Consulting d.o.o. ni naveden v nobenenem od razpoložljivih dokumentov."
+  },
+  {
+    "id": "SL14",
+    "type": "trick_contradictory",
+    "question": "Katere so DevOps veščine Janeza Novaka in na kateri ravni?",
+    "expected_answer": "Med matrikama 2023 in 2024 obstajajo razlike. Po matriki 2024 (aktualna): Docker 3, Kubernetes 2, Terraform 1, GitHub Actions 3, Ansible 1, Prometheus/Grafana 2. Po matriki 2023 so bile ocene nižje: Kubernetes 1, Terraform 0. Dokument iz 2024 eksplicitno navaja, da nadomešča verzijo 2023."
+  },
+  {
+    "id": "SL15",
+    "type": "trick_contradictory",
+    "question": "Kdaj je bil prvotno načrtovan go-live projekta Atlas in kdaj je dejansko šel v produkcijo?",
+    "expected_answer": "Različni dokumenti navajajo različne datume: originalna ponudba (avgust 2023) je predvidevala go-live Q2 2024 (junij 2024). Tedenski sestanek (marec 2024) je zaznal zamudo. Steering committee (maj 2024) je revidiral na december 2024. Memo Luka Zupan (november 2024) je potrdil fiksni datum 15. december 2024. Sistem bi moral opozoriti na to zgodovino revizij."
+  }
+]
