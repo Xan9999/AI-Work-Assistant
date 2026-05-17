@@ -4,13 +4,18 @@ Ingest documents into ChromaDB (vector) and BM25 (sparse) indices.
 Run: python src/ingest.py
 """
 
+import gc
+import os
 import re
 import pickle
 from pathlib import Path
-from typing import List
+
+# Limit CPU parallelism before importing torch — prevents AVX/MKL crashes
+# on machines where PyTorch's default thread count exceeds available resources.
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 import chromadb
-from chromadb import EmbeddingFunction, Documents, Embeddings
 from sentence_transformers import SentenceTransformer
 from rank_bm25 import BM25Okapi
 
@@ -22,18 +27,6 @@ MODEL_DIR = Path(__file__).parent.parent / "data" / "models"
 EMBEDDING_MODEL = "intfloat/multilingual-e5-base"
 COLLECTION_NAME = "nexus_docs"
 MAX_CHUNK_CHARS = 1800
-
-
-class E5EmbeddingFunction(EmbeddingFunction):
-    """ChromaDB embedding function that adds the required 'passage: ' prefix for E5 models."""
-
-    def __init__(self, model_name: str):
-        local_path = MODEL_DIR / model_name.replace("/", "--")
-        self.model = SentenceTransformer(str(local_path) if local_path.exists() else model_name)
-
-    def __call__(self, input: Documents) -> Embeddings:
-        texts = [f"passage: {doc}" for doc in input]
-        return self.model.encode(texts, normalize_embeddings=True).tolist()
 
 
 def chunk_markdown(text: str, doc_path: str, doc_type: str) -> list[dict]:
@@ -55,7 +48,7 @@ def chunk_markdown(text: str, doc_path: str, doc_type: str) -> list[dict]:
         if len(section) <= MAX_CHUNK_CHARS:
             chunks.append(_make_chunk(section, doc_title, section_heading, doc_path, doc_type, len(chunks)))
         else:
-            paragraphs = _atomic_blocks(section)
+            paragraphs = re.split(r'\n{2,}', section)
             current = ""
             for para in paragraphs:
                 if len(current) + len(para) + 2 > MAX_CHUNK_CHARS and current:
@@ -90,26 +83,6 @@ def chunk_text(text: str, doc_path: str, doc_type: str) -> list[dict]:
         chunks.append(_make_chunk(current, doc_title, "Content", doc_path, doc_type, len(chunks)))
 
     return chunks
-
-
-def _atomic_blocks(text: str) -> list[str]:
-    """Merge each ### sub-heading with the block immediately following it (usually a table).
-    Prevents chunking from splitting a table header from its rows."""
-    raw = [p.strip() for p in re.split(r'\n{2,}', text)]
-    blocks: list[str] = []
-    i = 0
-    while i < len(raw):
-        block = raw[i]
-        if not block:
-            i += 1
-            continue
-        if re.match(r'^#{2,4}\s+', block) and i + 1 < len(raw) and raw[i + 1]:
-            block = block + "\n\n" + raw[i + 1]
-            i += 2
-        else:
-            i += 1
-        blocks.append(block)
-    return blocks
 
 
 def _make_chunk(text: str, doc_title: str, section: str, doc_path: str, doc_type: str, idx: int) -> dict:
@@ -149,10 +122,20 @@ def load_documents() -> list[dict]:
 
 
 def build_vector_index(chunks: list[dict]) -> None:
-    """Embed chunks with E5 'passage: ' prefix and store in ChromaDB."""
-    ef = E5EmbeddingFunction(EMBEDDING_MODEL)
-    client = chromadb.PersistentClient(path=str(DB_DIR))
+    """Pre-compute E5 embeddings, free the model, then store in ChromaDB."""
+    local_path = MODEL_DIR / EMBEDDING_MODEL.replace("/", "--")
+    model_path = str(local_path) if local_path.exists() else EMBEDDING_MODEL
+    model = SentenceTransformer(model_path)
 
+    texts = [f"passage: {c['text']}" for c in chunks]
+    print(f"  Encoding {len(texts)} chunks...")
+    embeddings = model.encode(texts, normalize_embeddings=True, batch_size=16, show_progress_bar=True)
+
+    # Free model before ChromaDB operations to reduce peak memory
+    del model
+    gc.collect()
+
+    client = chromadb.PersistentClient(path=str(DB_DIR))
     try:
         client.delete_collection(COLLECTION_NAME)
     except Exception:
@@ -160,19 +143,19 @@ def build_vector_index(chunks: list[dict]) -> None:
 
     collection = client.create_collection(
         name=COLLECTION_NAME,
-        embedding_function=ef,
         metadata={"hnsw:space": "cosine"},
     )
 
-    batch_size = 50  # smaller batch — E5 base is larger than MiniLM
+    batch_size = 50
     for i in range(0, len(chunks), batch_size):
         batch = chunks[i : i + batch_size]
         collection.add(
             ids=[c["id"] for c in batch],
             documents=[c["text"] for c in batch],
             metadatas=[c["metadata"] for c in batch],
+            embeddings=embeddings[i : i + batch_size].tolist(),
         )
-        print(f"  Indexed {min(i + batch_size, len(chunks))}/{len(chunks)} chunks...", end="\r")
+        print(f"  Stored {min(i + batch_size, len(chunks))}/{len(chunks)} chunks...", end="\r")
 
     print(f"  Vector index: {len(chunks)} chunks stored in ChromaDB            ")
 

@@ -7,7 +7,6 @@ Improvements:
 - HyDE: vector_search() accepts a pre-generated hypothetical answer
 """
 
-import gc
 import pickle
 from pathlib import Path
 
@@ -40,7 +39,7 @@ class E5EmbeddingFunction(EmbeddingFunction):
 
     def __call__(self, input: Documents) -> Embeddings:
         texts = [f"passage: {doc}" for doc in input]
-        return self.model.encode(texts, normalize_embeddings=True).tolist()
+        return self.model.encode(texts, normalize_embeddings=True, batch_size=8).tolist()
 
 
 class HybridRetriever:
@@ -57,7 +56,7 @@ class HybridRetriever:
 
         print("Connecting to ChromaDB...")
         client = chromadb.PersistentClient(path=str(DB_DIR))
-        self.collection = client.get_collection(COLLECTION_NAME, embedding_function=self.ef)
+        self.collection = client.get_collection(COLLECTION_NAME)
 
         print(f"Loading reranker ({RERANKER_MODEL})...")
         local_reranker = MODEL_DIR / RERANKER_MODEL.replace("/", "--")
@@ -120,8 +119,7 @@ class HybridRetriever:
             return []
 
         pairs = [(query, c["text"]) for c in candidates]
-        scores = self.reranker.predict(pairs, batch_size=4)
-        gc.collect()
+        scores = self.reranker.predict(pairs)
 
         ranked = sorted(zip(candidates, scores), key=lambda x: x[1], reverse=True)
 

@@ -14,7 +14,6 @@ load_dotenv()
 MODEL = os.getenv("CHATGPT_MODEL", "gpt-4o-mini")
 RERANK_SCORE_THRESHOLD = -6.0
 MAX_HISTORY_TURNS = 3
-CONTRADICTION_CHECK_K = 10
 
 
 SYSTEM_PROMPT = """You are an internal AI assistant for Nexus Consulting d.o.o., an IT consulting firm.
@@ -51,28 +50,6 @@ HYDE_PROMPT = """Write a short, specific answer to the following question as if 
 Question: {question}
 
 Answer:"""
-
-
-CONTRADICTION_PROMPT = """An AI assistant answered a question with the response below. You are given {n} document excerpts retrieved for the same question.
-
-Question: {question}
-
-Answer given: {answer}
-
-Document excerpts:
-{context}
-
----
-
-Do any of these excerpts state a DIFFERENT value for the same fact mentioned in the answer? Look specifically for:
-- Different dates, numbers, or amounts for the same event
-- Different names or roles for the same person
-- Different statuses or outcomes for the same project
-
-Reply with JSON only:
-{{"contradiction_found": true, "explanation": "<one sentence describing what conflicts>"}}
-or
-{{"contradiction_found": false, "explanation": ""}}"""
 
 
 class RAGAssistant:
@@ -127,36 +104,6 @@ class RAGAssistant:
             return f"{last_user} {question}"
         return question
 
-    def _check_contradiction(self, question: str, answer: str, broad_chunks: list[dict]) -> str | None:
-        """
-        Run a broader retrieval (k=10, no HyDE) and ask the LLM whether any chunk
-        contradicts the already-generated answer. Returns an explanation string if
-        a contradiction is found, otherwise None.
-        No HyDE here — we want broad topic coverage, not confirmation of the answer.
-        """
-        if not broad_chunks:
-            return None
-        context = format_sources(broad_chunks)
-        prompt = CONTRADICTION_PROMPT.format(
-            n=len(broad_chunks),
-            question=question,
-            answer=answer,
-            context=context,
-        )
-        try:
-            response = self.client.chat.completions.create(
-                model=MODEL,
-                max_tokens=256,
-                messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
-            )
-            data = json.loads(response.choices[0].message.content)
-            if data.get("contradiction_found"):
-                return data.get("explanation", "Dokumenti vsebujejo nasprotujoče si informacije.")
-        except Exception:
-            pass
-        return None
-
     def _is_context_useful(self, chunks: list[dict]) -> bool:
         if not chunks:
             return False
@@ -178,30 +125,24 @@ class RAGAssistant:
 
         if query_type == "multi_hop":
             sub_questions = self.decompose_query(retrieval_query)
-            chunks: list[dict] = []
+            all_chunks: list[dict] = []
             seen_ids: set[str] = set()
-            best_sub_score = -999.0
 
-            # Keep top-5 per sub-question instead of joint-reranking all results.
-            # Joint reranking against the main question kills chunks that answer only
-            # one part of a multi-part question (e.g. ERP skills table scores low
-            # when the main question asks about BOTH ERP AND cloud experience).
             for sub_q in sub_questions:
                 hypothetical = self._generate_hypothetical(sub_q)
-                for chunk in self.retriever.search(sub_q, hypothetical=hypothetical, k=5):
-                    best_sub_score = max(best_sub_score, chunk.get("rerank_score", -999.0))
+                for chunk in self.retriever.search(sub_q, hypothetical=hypothetical):
                     if chunk["id"] not in seen_ids:
-                        chunks.append(chunk)
+                        all_chunks.append(chunk)
                         seen_ids.add(chunk["id"])
+
+            chunks = self.retriever.rerank(retrieval_query, all_chunks, k=7)
+            chunks = [self.retriever._expand_chunk(c) for c in chunks]
         else:
             sub_questions = []
             hypothetical = self._generate_hypothetical(retrieval_query)
             chunks = self.retriever.search(retrieval_query, hypothetical=hypothetical)
 
-        useful = self._is_context_useful(chunks) or (
-            query_type == "multi_hop" and best_sub_score > RERANK_SCORE_THRESHOLD
-        )
-        if not useful:
+        if not self._is_context_useful(chunks):
             answer_text = "Based on the available documents, I cannot answer this question. No sufficiently relevant information was found in the document corpus."
             self.history.append({"role": "user", "content": question})
             self.history.append({"role": "assistant", "content": answer_text})
@@ -229,12 +170,6 @@ class RAGAssistant:
         )
 
         answer_text = response.choices[0].message.content.strip()
-
-        # Contradiction check: broader retrieval (no HyDE) to catch conflicting documents
-        broad_chunks = self.retriever.search(retrieval_query, k=CONTRADICTION_CHECK_K)
-        contradiction = self._check_contradiction(question, answer_text, broad_chunks)
-        if contradiction:
-            answer_text += f"\n\n⚠️ **Opozorilo — nasprotujoče si informacije:** {contradiction}"
 
         self.history.append({"role": "user", "content": question})
         self.history.append({"role": "assistant", "content": answer_text})
