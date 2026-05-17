@@ -7,6 +7,7 @@ Improvements:
 - HyDE: vector_search() accepts a pre-generated hypothetical answer
 """
 
+import gc
 import pickle
 from pathlib import Path
 
@@ -119,7 +120,8 @@ class HybridRetriever:
             return []
 
         pairs = [(query, c["text"]) for c in candidates]
-        scores = self.reranker.predict(pairs)
+        scores = self.reranker.predict(pairs, batch_size=4)
+        gc.collect()
 
         ranked = sorted(zip(candidates, scores), key=lambda x: x[1], reverse=True)
 

@@ -55,7 +55,7 @@ def chunk_markdown(text: str, doc_path: str, doc_type: str) -> list[dict]:
         if len(section) <= MAX_CHUNK_CHARS:
             chunks.append(_make_chunk(section, doc_title, section_heading, doc_path, doc_type, len(chunks)))
         else:
-            paragraphs = re.split(r'\n{2,}', section)
+            paragraphs = _atomic_blocks(section)
             current = ""
             for para in paragraphs:
                 if len(current) + len(para) + 2 > MAX_CHUNK_CHARS and current:
@@ -90,6 +90,26 @@ def chunk_text(text: str, doc_path: str, doc_type: str) -> list[dict]:
         chunks.append(_make_chunk(current, doc_title, "Content", doc_path, doc_type, len(chunks)))
 
     return chunks
+
+
+def _atomic_blocks(text: str) -> list[str]:
+    """Merge each ### sub-heading with the block immediately following it (usually a table).
+    Prevents chunking from splitting a table header from its rows."""
+    raw = [p.strip() for p in re.split(r'\n{2,}', text)]
+    blocks: list[str] = []
+    i = 0
+    while i < len(raw):
+        block = raw[i]
+        if not block:
+            i += 1
+            continue
+        if re.match(r'^#{2,4}\s+', block) and i + 1 < len(raw) and raw[i + 1]:
+            block = block + "\n\n" + raw[i + 1]
+            i += 2
+        else:
+            i += 1
+        blocks.append(block)
+    return blocks
 
 
 def _make_chunk(text: str, doc_title: str, section: str, doc_path: str, doc_type: str, idx: int) -> dict:
