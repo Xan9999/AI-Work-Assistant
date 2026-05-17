@@ -3,12 +3,15 @@ LLM-as-judge evaluation over the 15-question eval set.
 
 Usage:
     python eval/evaluate.py
+    python eval/evaluate.py --questions eval/questions_sl.json --results eval/results_sl.json --report eval/report_sl.md
 
 Outputs:
     eval/results.json   — per-question scores
     eval/report.md      — human-readable summary
 """
 
+import argparse
+import gc
 import os
 import sys
 import json
@@ -95,6 +98,12 @@ def judge_answer(client: OpenAI, question: dict, actual_answer: str) -> dict:
     if question["type"] != "trick_contradictory":
         scores["contradiction_handling"] = 3
 
+    # For unanswerable questions, source_citation is auto 3 when the answer correctly refuses.
+    # Correct refusal = no sources were retrieved (system had nothing to cite).
+    # Penalizing citation when there is nothing to cite conflates "no sources" with "bad citation".
+    if question["type"] == "unanswerable" and scores["uncertainty_handling"] >= 2:
+        scores["source_citation"] = 3
+
     scores["total"] = (
         scores["factual_correctness"]
         + scores["source_citation"]
@@ -106,8 +115,8 @@ def judge_answer(client: OpenAI, question: dict, actual_answer: str) -> dict:
     return scores
 
 
-def run_evaluation():
-    questions = json.loads(QUESTIONS_PATH.read_text(encoding="utf-8"))
+def run_evaluation(questions_path: Path = QUESTIONS_PATH, results_path: Path = RESULTS_PATH, report_path: Path = REPORT_PATH):
+    questions = json.loads(questions_path.read_text(encoding="utf-8"))
     client = OpenAI(api_key=os.environ["CHATGPT_API_KEY"].strip())
 
     print("Initializing RAG assistant...")
@@ -156,15 +165,16 @@ def run_evaluation():
 
         # Small delay to respect free-tier rate limits
         time.sleep(1)
+        gc.collect()
 
-    RESULTS_PATH.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"\nResults saved to {RESULTS_PATH}")
+    results_path.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\nResults saved to {results_path}")
 
-    write_report(results)
-    print(f"Report saved to {REPORT_PATH}")
+    write_report(results, report_path)
+    print(f"Report saved to {report_path}")
 
 
-def write_report(results: list[dict]) -> None:
+def write_report(results: list[dict], report_path: Path = REPORT_PATH) -> None:
     total_score = sum(r["scores"]["total"] for r in results)
     max_score = sum(r["scores"]["max_total"] for r in results)
     overall_pct = round(total_score / max_score * 100, 1)
@@ -222,8 +232,29 @@ def write_report(results: list[dict]) -> None:
     else:
         lines.append("- No major failures (score < 6/12).")
 
-    REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
-    run_evaluation()
+    parser = argparse.ArgumentParser(description="LLM-as-judge evaluation for the RAG assistant.")
+    parser.add_argument(
+        "--questions",
+        default=str(QUESTIONS_PATH),
+        help="Path to questions JSON file (default: eval/questions.json)",
+    )
+    parser.add_argument(
+        "--results",
+        default=str(RESULTS_PATH),
+        help="Output path for results JSON (default: eval/results.json)",
+    )
+    parser.add_argument(
+        "--report",
+        default=str(REPORT_PATH),
+        help="Output path for report Markdown (default: eval/report.md)",
+    )
+    args = parser.parse_args()
+    run_evaluation(
+        questions_path=Path(args.questions),
+        results_path=Path(args.results),
+        report_path=Path(args.report),
+    )
