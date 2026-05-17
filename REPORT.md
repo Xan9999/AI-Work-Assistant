@@ -32,9 +32,9 @@ Nobena metoda sama ne zadostuje za posvetovalni korpus. BM25 zanesljivo najde ek
 
 ## Kaj bi naredil drugače z enim tednom
 
-**Vzporedni klici z `asyncio`.** Večskočno iskanje za 4 podvprašanja traja ~35 s, ker so klici sekvencialni. Z vzporednim izvajanjem (4 HyDE + 4 retrieval hkrati) bi latenca padla na ~12–15 s — pri pogovornem asistentu je to razlika med »sprejemljivo« in »neuporabno«.
+**Agentni RAG namesto fiksnega pipeline-a.** Trenutni sistem ima nespremenljivo zaporedje korakov: klasificiraj → razgradi → retrieval → reranker → generiraj. Agent z orodji (npr. `search(query)`, `get_document(name)`, `filter_by_date(after, before)`, `compare(doc_a, doc_b)`) bi sam odločil, kaj in v kakšnem vrstnem redu poizvedati. Za Q14 bi agent eksplicitno poiskal vse dokumente, ki omenjajo »Atlas« in vsebujejo datum, ter jih primerjal — namesto da upa, da bodo vsi pristali v top-k. Za SL04 bi po »Opis incidenta« samodejno poiskal »Analiza vzrokov« v istem dokumentu. Agentni pristop ne odpravi le teh dveh točkovnih napak — odpre možnost za iterativno iskanje, kjer agent ugotovi, da ima premalo konteksta, in poizve še enkrat z drugačno strategijo.
 
-**Grafna struktura dokumentov za revizijske verige.** Q14 bi rešil grafni pristop: vozlišča so dokumenti, robovi pa »ta dokument nadomešča onega«. Namesto iskanja po podobnosti bi sledili grafnim povezavam — vse revizije istega projekta bi bile dosegljive po definiciji, ne po srečni kombinaciji k-ja in relevančnih scorov.
+**Ekstrakcija entitet in relacij v grafno bazo.** Ob ingestion fazi bi z LLM-jem iz vsakega dokumenta ekstrahiral entitete (projekti, osebe, datumi, tehnologije) in relacije (»Luka Zupan je delal na Atlasu«, »atlas_proposal.md nadomešča atlas_weekly_march.md«) ter jih shranil v Neo4j ali networkx graf. Retrieval bi kombiniral vektorsko iskanje z grafnim obhodom — vprašanje »kaj se je Nexus naučil pri cloud migracijah?« bi sprožilo iskanje vozlišča »cloud migracija«, od tam pa sledilo robovom do projektov, lekcij in oseb. To bi rešilo revizijske verige (Q14), matrična vprašanja (Q08, SL07) in multi-hop poizvedbe strukturalno, ne s povečevanjem k. Pristop je znan kot GraphRAG in je trenutno aktivno področje razvoja.
 
 ---
 
