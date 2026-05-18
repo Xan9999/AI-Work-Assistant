@@ -4,12 +4,13 @@ RAG assistant: query classification, multi-hop decomposition, HyDE, answer gener
 
 import os
 import json
+from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 
 from retrieval import HybridRetriever, format_sources
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 MODEL = os.getenv("CHATGPT_MODEL", "gpt-4o-mini")
 RERANK_SCORE_THRESHOLD = -6.0

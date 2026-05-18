@@ -25,7 +25,7 @@ from openai import OpenAI
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from rag import RAGAssistant
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 QUESTIONS_PATH = Path(__file__).parent / "questions.json"
 RESULTS_PATH = Path(__file__).parent / "results.json"
