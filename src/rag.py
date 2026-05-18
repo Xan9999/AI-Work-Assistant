@@ -81,7 +81,10 @@ Reply with JSON only:
 class RAGAssistant:
     def __init__(self):
         self.retriever = HybridRetriever()
-        self.client = OpenAI(api_key=os.environ["CHATGPT_API_KEY"].strip())
+        api_key = os.getenv("CHATGPT_API_KEY", "").strip()
+        if not api_key:
+            raise RuntimeError("CHATGPT_API_KEY not set — add it to your .env file in the project root")
+        self.client = OpenAI(api_key=api_key)
         self.history: list[dict] = []
 
     def clear_history(self) -> None:

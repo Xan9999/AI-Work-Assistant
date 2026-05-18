@@ -117,7 +117,10 @@ def judge_answer(client: OpenAI, question: dict, actual_answer: str) -> dict:
 
 def run_evaluation(questions_path: Path = QUESTIONS_PATH, results_path: Path = RESULTS_PATH, report_path: Path = REPORT_PATH):
     questions = json.loads(questions_path.read_text(encoding="utf-8"))
-    client = OpenAI(api_key=os.environ["CHATGPT_API_KEY"].strip())
+    api_key = os.getenv("CHATGPT_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("CHATGPT_API_KEY not set — add it to your .env file in the project root")
+    client = OpenAI(api_key=api_key)
 
     print("Initializing RAG assistant...")
     assistant = RAGAssistant()
